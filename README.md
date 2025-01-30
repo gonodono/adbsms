@@ -1,3 +1,9 @@
+## adbsms
+
+> [!CAUTION]
+> The SMS permissions are classified dangerous and this app essentially bypasses
+> the security and privacy offered by that mechanism. Use at your own risk!
+
 A very simple example of a `ContentProvider` that relays queries to the SMS
 Provider, allowing queries over adb without adb's process holding the
 `READ_SMS` permission.
@@ -9,10 +15,5 @@ Settings.
 Example usage:
 
 ```kotlin
-adb shell content query --uri content ://adbsms --projection address:body
+adb shell content query --uri content://adbsms --projection address:body
 ```
-
-> [!CAUTION]
-> The SMS permissions are considered dangerous for a reason, and this app
-> essentially bypasses the security and privacy offered by that mechanism.
-> Use at your own risk!

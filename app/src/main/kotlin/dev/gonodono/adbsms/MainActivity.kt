@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val contract = ActivityResultContracts.RequestPermission()
-        val request = registerForActivityResult(contract) { setUpUi(it) }
+        val request = registerForActivityResult(contract, ::setUpUi)
 
         super.onCreate(savedInstanceState)
 

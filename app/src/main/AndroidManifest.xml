@@ -27,7 +27,7 @@
         </activity>
 
         <provider
-            android:name=".SmsAdbProvider"
+            android:name=".AdbSmsProvider"
             android:authorities="adbsms"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />

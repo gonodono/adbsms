@@ -7,7 +7,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.database.Cursor
 import android.net.Uri
 
-class SmsAdbProvider : ContentProvider() {
+class AdbSmsProvider : ContentProvider() {
 
     override fun onCreate(): Boolean =
         context?.checkSelfPermission(READ_SMS) == PERMISSION_GRANTED

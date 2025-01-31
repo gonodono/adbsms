@@ -19,6 +19,7 @@ class AdbSmsProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
+        val resolver = checkNotNull(context?.contentResolver)
         val smsUri = with(uri) {
             Uri.Builder()
                 .scheme(scheme)
@@ -28,7 +29,7 @@ class AdbSmsProvider : ContentProvider() {
                 .fragment(fragment)
                 .build()
         }
-        return context?.contentResolver?.query(
+        return resolver.query(
             smsUri,
             projection,
             selection,
@@ -37,8 +38,8 @@ class AdbSmsProvider : ContentProvider() {
         )
     }
 
-    override fun getType(uri: Uri): String? =
-        context?.contentResolver?.getType(uri)
+    override fun getType(uri: Uri): String =
+        throw UnsupportedOperationException()
 
     override fun insert(uri: Uri, values: ContentValues?): Uri =
         throw UnsupportedOperationException()

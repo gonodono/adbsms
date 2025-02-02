@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 
+// If you're not using the default SMS app option, this can all be removed.
+
 class SmsReceiver : BroadcastReceiver() {
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")

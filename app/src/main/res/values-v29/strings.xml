@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="default_app">Alternatively, temporarily setting adbsms as the default SMS app will allow access to the other types – <i>draft</i>, <i>failed</i>, etc. – but you will lose all messaging functionality in the meantime.\n\n(On API levels 29+, there\'s no way to programmatically select a separate app as the default, so you\'ll have to revert to the original manually.)</string>
-    <string name="default_revert">Open previous default to revert</string>
-
+    <string name="revert_default">Open previous default to revert</string>
 </resources>

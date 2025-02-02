@@ -3,14 +3,19 @@
     <string name="app_name">adbsms</string>
     <string name="caveat">This is <i>not</i> a functional SMS app.</string>
 
-    <string name="basic_use">The base functionality requires just the <tt>READ_SMS</tt> permission, but only <i>inbox</i> and <i>sent</i> messages can be seen by non-default apps on Marshmallow and above.\n\n(An app can\'t revoke its own permission, so turning this off has to be handled manually in Settings.)</string>
+    <string name="basic_queries">Basic queries</string>
+    <string name="full_access">Full access</string>
+
+    <string name="basic_use">The base functionality requires just the <tt>READ_SMS</tt> permission, but only <i>inbox</i> and <i>sent</i> messages can be seen by non-default apps on Marshmallow and above (API levels 23+).</string>
+    <string name="basic_revert">Turning this off has to be handled manually in Settings, since an app can\'t revoke a permission for itself.</string>
     <string name="request_permission">Request <tt>READ_SMS</tt> permission</string>
     <string name="open_settings">Open Settings to revoke</string>
 
-    <string name="default_app">Alternatively, temporarily setting adbsms as the default SMS app will allow access to the other types – <i>draft</i>, <i>failed</i>, etc. – but you will lose all messaging functionality in the meantime.</string>
+    <string name="full_use">Temporarily setting adbsms as the default SMS app will enable full read and write access, but you will lose all messaging functionality for the duration.</string>
+    <string name="full_revert">There\'s no way to programmatically select a separate app as the default on API levels 29+, so you\'ll have to revert to the original manually.</string>
     <string name="current_default"><b>Current default:</b></string>
-    <string name="default_set">Set adbsms as default</string>
-    <string name="default_revert">Reset default to previous</string>
+    <string name="set_default">Set adbsms as default</string>
+    <string name="revert_default">Reset default to previous</string>
     <string name="revert_error">Error. Revert manually.</string>
 
 </resources>

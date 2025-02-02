@@ -2,6 +2,7 @@ package dev.gonodono.adbsms
 
 import android.Manifest.permission.READ_SMS
 import android.content.ContentProvider
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.database.Cursor
@@ -18,42 +19,54 @@ class AdbSmsProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?,
         sortOrder: String?
-    ): Cursor? {
-        val resolver = checkNotNull(context?.contentResolver)
-        val smsUri = with(uri) {
-            Uri.Builder()
-                .scheme(scheme)
-                .authority("sms")
-                .path(path)
-                .query(query)
-                .fragment(fragment)
-                .build()
-        }
-        return resolver.query(
-            smsUri,
+    ): Cursor? =
+        requireContentResolver().query(
+            uri.toSmsUri(),
             projection,
             selection,
             selectionArgs,
             sortOrder
         )
-    }
 
-    override fun getType(uri: Uri): String =
-        throw UnsupportedOperationException()
+    override fun getType(uri: Uri): String? =
+        requireContentResolver().getType(uri.toSmsUri())
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri =
-        throw UnsupportedOperationException()
+    override fun insert(uri: Uri, values: ContentValues?): Uri? =
+        requireContentResolver().insert(uri.toSmsUri(), values)
 
     override fun delete(
         uri: Uri,
         selection: String?,
         selectionArgs: Array<out String>?
-    ): Int = throw UnsupportedOperationException()
+    ): Int =
+        requireContentResolver().delete(
+            uri.toSmsUri(),
+            selection,
+            selectionArgs
+        )
 
     override fun update(
         uri: Uri,
         values: ContentValues?,
         selection: String?,
         selectionArgs: Array<out String>?
-    ): Int = throw UnsupportedOperationException()
+    ): Int =
+        requireContentResolver().update(
+            uri.toSmsUri(),
+            values,
+            selection,
+            selectionArgs
+        )
+
+    private fun requireContentResolver(): ContentResolver =
+        checkNotNull(context?.contentResolver) { "Cannot find ContentResolver" }
 }
+
+private fun Uri.toSmsUri(): Uri =
+    Uri.Builder()
+        .scheme(scheme)
+        .authority("sms")
+        .path(path)
+        .query(query)
+        .fragment(fragment)
+        .build()

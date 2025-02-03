@@ -1,17 +1,15 @@
 package dev.gonodono.adbsms
 
-import android.Manifest.permission.READ_SMS
 import android.content.ContentProvider
 import android.content.ContentResolver
 import android.content.ContentValues
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.database.Cursor
 import android.net.Uri
+import dev.gonodono.adbsms.internal.hasReadSmsPermission
 
 class AdbSmsProvider : ContentProvider() {
 
-    override fun onCreate(): Boolean =
-        context?.checkSelfPermission(READ_SMS) == PERMISSION_GRANTED
+    override fun onCreate(): Boolean = context?.hasReadSmsPermission() == true
 
     override fun query(
         uri: Uri,

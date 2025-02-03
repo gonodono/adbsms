@@ -43,5 +43,6 @@ class HeadlessSmsSendService : Service() {
 }
 
 private fun warn(message: String) {
+    if (!BuildConfig.DEBUG) return
     Log.w("adbsms", "$message while adbsms is the default SMS app")
 }

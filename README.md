@@ -4,32 +4,42 @@ A simple Android app that exposes an unprotected `ContentProvider` that relays
 operations to the SMS Provider, allowing messages to be queried and modified
 over adb without causing a `SecurityException` due to missing permissions.
 
+<br />
+
 > [!CAUTION]
 > All SMS Provider operations are guarded by dangerous permissions. This app
 > effectively bypasses the security and privacy measures provided by that
 > mechanism, and could potentially be exploited by a malicious actor. It should
 > be disabled or uninstalled when not in use. <b>Use at your own risk!</b>
 
+<br />
+
 ## Overview
 
-The app offers two options for enabling access to the SMS Provider:
+The app offers two levels of access to the SMS Provider.
 
-+ Requesting the `READ_SMS` permission directly.
++ **Basic queries:** Requesting the `READ_SMS` permission directly
 
   This read-only option is the most straightforward of the two. On Marshmallow
   and above, however, you'll be able to view only _inbox_ and _sent_ messages.
 
-+ Temporarily setting adbsms as the default SMS app.
++ **Full access:** Temporarily setting adbsms as the default SMS app
 
-  This option will grant you full read and write access on all applicable
-  versions, but all messaging functionality will be broken while adbsms is the
+  This option will grant you full read and write access on each applicable
+  version, but all messaging functionality will be broken while adbsms is the
   default. This means that any incoming messages will just be lost, though it
-  should be possible to implement some sort of fallback logging or persistence
-  in [the relevant component classes][stubs], if you really need it.
+  would be possible to implement some sort of fallback logging or persistence in
+  [the relevant component classes][stubs], should you really need it.
 
-After enabling the desired option, queries can made by replacing the authority
-in the `content://sms` URI for a regular query with `adbsms`. For example, to
-list the number and text for all (viewable) messages:
+After enabling the desired option, queries can be made just as they usually are
+over adb by replacing the authority in any `content://sms` URI with `adbsms`.
+
+### Examples
+
+You can consult adb's documentation for further details, but these few examples
+should at least clarify the proper usage.
+
+To list the number and text for all (viewable) messages:
 
 ```
 adb shell content query --uri content://adbsms --projection address:body
@@ -62,14 +72,14 @@ adb shell content update --uri content://adbsms/137 --bind body:s:"Updated\ text
 Or insert a new one:
 
 ```
-adb shell content insert --uri content://adbsms --bind address:s:0123456789 --bind body:s:"Draft\ text" --bind type:i:3
+adb shell content insert --uri content://adbsms --bind body:s:"Draft\ text" --bind type:i:3
 ```
 
 The `type` column corresponds to the `MESSAGE_TYPE_*` values from the
 [`Telephony.TextBasedSmsColumns`][columns] contract, which are summarized in the
 following table.
 
-## Message types
+### Message types
 
 | Type   | Value |
 |--------|:-----:|
@@ -81,6 +91,8 @@ following table.
 | Failed |   5   |
 | Queued |   6   |
 
+<br />
+
 ## Notes
 
 + Don't get your hopes up if you're using the default SMS app option looking for
@@ -89,7 +101,7 @@ following table.
   I guess they save that data to internal storage instead, for some reason. Just
   a heads up.
 
-+ I haven't implemented all of the possible `ContentProvider` operations in the
++ I haven't implemented every possible `ContentProvider` operation in the
   [`AdbSmsProvider`][provider] class, but it does cover the required overrides.
   I _think_ that should be sufficient for everything that adb can do, but if you
   find that I've missed something, please [file an issue][issue] for it.

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/option_refresh"
+        android:icon="@drawable/ic_refresh"
+        android:title="@string/menu_refresh_ui"
+        app:iconTint="?android:textColorPrimary"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/option_banner"
+        android:checkable="true"
+        android:title="@string/menu_warning_banner"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/option_notification"
+        android:checkable="true"
+        android:title="@string/menu_warning_notification"
+        app:showAsAction="never" />
+
+</menu>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fadeScrollbars="false"
+    android:fillViewport="true"
+    android:scrollbarStyle="outsideInset">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/full_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_full_info"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/set_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:text="@string/action_set_default"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:id="@+id/current_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:gravity="center_horizontal"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/label_current_default"
+            android:textColor="?colorControlActivated"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/full_revert_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="@string/label_full_revert"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/revert_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:text="@string/action_revert_default"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+</ScrollView>

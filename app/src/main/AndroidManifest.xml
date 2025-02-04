@@ -10,12 +10,15 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Required for the default SMS app functionality. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+
     <!-- Required for write ops on Lollipop 21 and 22, if supporting those. -->
     <!-- <uses-permission android:name="android.permission.WRITE_SMS" /> -->
 
 
     <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage(). -->
-    <!-- If you're not using the default SMS app option at all, both can be removed. -->
     <!-- The <queries> entry seems sufficient for API levels 30..33, but later versions -->
     <!-- apparently require the QUERY_ALL_PACKAGES permission. I'm not sure why, though, -->
     <!-- as I can't find any mention of relevant behavior changes. -->
@@ -56,14 +59,10 @@
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 
-        <receiver android:name=".internal.NotificationReceiver" />
+        <receiver android:name=".internal.NotificationDeleteReceiver" />
 
 
-        <!-- Default SMS app components. You could do this without creating any of -->
-        <!-- the actual classes, by simply suppressing the resulting lint warnings -->
-        <!-- and errors, but that would guarantee a crash if you happened to get a -->
-        <!-- message while this app is the default. If you're not using the default -->
-        <!-- app option, all of the following can be removed, as can the classes. -->
+        <!-- Default SMS app components -->
 
         <receiver
             android:name=".SmsReceiver"

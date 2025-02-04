@@ -31,11 +31,11 @@ The app offers two levels of access to the SMS Provider:
 
 + Full access, by assuming the default SMS app role.
 
-  This option will grant you full read and write access on each applicable
-  version, but all messaging functionality will be broken while adbsms is the
-  default. This means that any incoming messages will just be lost, though it
-  would be possible to implement some sort of fallback logging or persistence in
-  [the relevant component classes][stubs], should you really need it.
+  This one will grant you full read and write access on each applicable version,
+  but your messaging will be largely nonfunctional while adbsms is the default.
+  The only fallback facility currently provided is (optional) incoming SMS
+  processing and storage. Nothing else is handled, aside from some very
+  simplistic event logs, and there is no way to send anything out.
 
 After enabling the desired option, queries can be made like they usually are
 over adb by replacing the authority in any `content://sms` URI with `adbsms`.
@@ -103,16 +103,18 @@ following table.
 
 + If you plan to use the default SMS app option in order to get at the hidden
   types, you should know that not all SMS apps utilize each one. Though most
-  use Inbox and Sent consistently, it seems that many apps just don't use Draft
-  and/or the others at all. I'm guessing they save those messages to internal
-  storage instead, for some reason. Just a heads up.
+  use Inbox and Sent consistently, it seems that many apps simply don't use
+  Draft and/or the others at all. I'm guessing they save those messages to
+  internal storage instead, for some reason. Just a heads up.
 
-+ I have not implemented every possible `ContentProvider` operation in the
-  [`AdbSmsProvider`][provider] class, but it does cover all of the required
-  overrides. I _think_ that should be sufficient for everything that adb can do,
-  but if you find something I've missed, please [file an issue][issue] for it.
++ If you need to use the Full access option on Lollipop, API levels 21 or 22,
+  you will need to un-comment the `WRITE_SMS` permission in the manifest (and
+  probably suppress a warning or two, as well).
 
-[stubs]: app/src/main/kotlin/dev/gonodono/adbsms/DefaultSmsAppStubs.kt
++ I haven't implemented every possible `ContentProvider` operation in
+  [`AdbSmsProvider`][provider], but it does cover all of the required overrides.
+  I _think_ that should be sufficient for everything that adb can do, but if you
+  find something I've missed, please [file an issue][issue] for it.
 
 [columns]: https://developer.android.com/reference/android/provider/Telephony.TextBasedSmsColumns
 

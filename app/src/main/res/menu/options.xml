@@ -5,14 +5,35 @@
     <item
         android:id="@+id/option_refresh"
         android:icon="@drawable/ic_refresh"
-        android:title="@string/menu_refresh_ui"
+        android:title="@string/menu_refresh"
         app:iconTint="?android:textColorPrimary"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/option_notification"
+        android:id="@+id/option_alerts"
         android:checkable="true"
-        android:title="@string/menu_warning_notification"
+        android:title="@string/menu_alerts"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/option_default"
+        android:title="@string/menu_default"
+        app:showAsAction="never">
+
+        <menu>
+
+            <item
+                android:id="@+id/option_log"
+                android:checkable="true"
+                android:title="@string/menu_log" />
+
+            <item
+                android:id="@+id/option_save"
+                android:checkable="true"
+                android:title="@string/menu_save" />
+
+        </menu>
+
+    </item>
 
 </menu>

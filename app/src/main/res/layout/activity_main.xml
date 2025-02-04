@@ -32,7 +32,6 @@
         </FrameLayout>
 
         <RelativeLayout
-            android:id="@+id/read"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/spacing_large"
@@ -69,7 +68,6 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/full"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/spacing_large"

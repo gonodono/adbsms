@@ -7,8 +7,7 @@ import android.app.role.RoleManager.ROLE_SMS
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT
-import android.provider.Telephony.Sms.Intents.EXTRA_PACKAGE_NAME
+import android.provider.Telephony
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
@@ -24,17 +23,11 @@ import dev.gonodono.adbsms.databinding.ActivityMainBinding
 import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.applyInsetsListener
 import dev.gonodono.adbsms.internal.checkShowIntro
-import dev.gonodono.adbsms.internal.getDefaultSmsPackage
 import dev.gonodono.adbsms.internal.hasPostNotificationsPermission
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 import dev.gonodono.adbsms.internal.openAppSettings
 import dev.gonodono.adbsms.internal.setIcon
 import dev.gonodono.adbsms.internal.updateNotification
-
-// Most everything here isn't strictly necessary, apart from needing to launch
-// MainActivity once to bring the app out of the stopped state. After that, you
-// could grant the SMS permission manually through the device Settings, or
-// change the default SMS app just like you would normally.
 
 class MainActivity : AppCompatActivity() {
 
@@ -72,11 +65,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menu ?: return false
-        val item = menu.findItem(R.id.option_notification)
+
+        val preferences = appPreferences()
+
+        val alerts = menu.findItem(R.id.option_alerts)
         val canPost = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                 hasPostNotificationsPermission()
-        item.isChecked = canPost && appPreferences().showNotification
-        item.isEnabled = canPost
+        alerts.isChecked = canPost && preferences.showAlerts
+        alerts.isEnabled = canPost
+
+        menu.findItem(R.id.option_log).isChecked = preferences.logIncoming
+        menu.findItem(R.id.option_save).isChecked = preferences.saveIncoming
+
         return true
     }
 
@@ -85,12 +85,19 @@ class MainActivity : AppCompatActivity() {
             // In case things get stuck due to bad timing with a launched op.
             R.id.option_refresh -> {
                 Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
+                updateUi()
             }
-            R.id.option_notification -> {
-                appPreferences().apply { showNotification = !showNotification }
+            R.id.option_alerts -> {
+                appPreferences().apply { showAlerts = !showAlerts }
+                updateUi(alertOnly = true)
+            }
+            R.id.option_log -> {
+                appPreferences().apply { logIncoming = !logIncoming }
+            }
+            R.id.option_save -> {
+                appPreferences().apply { saveIncoming = !saveIncoming }
             }
         }
-        updateUi()
         return true
     }
 
@@ -100,10 +107,14 @@ class MainActivity : AppCompatActivity() {
         updateUi()
     }
 
-    private fun updateUi() {
+    private fun updateUi(alertOnly: Boolean = false) {
         val hasRead = hasReadSmsPermission()
         val default = getDefaultSmsPackage()
         val isDefault = packageName == default
+
+        val show = appPreferences().showAlerts
+        updateNotification(this, show, hasRead, isDefault)
+        if (alertOnly) return
 
         ui.status.apply {
             when {
@@ -131,8 +142,8 @@ class MainActivity : AppCompatActivity() {
                 setOnClickListener { requestPermission(READ_SMS) }
                 contentDescription = getText(R.string.desc_enable_read_only)
             }
-            setCheckedActual(hasRead)
             isEnabled = !isDefault
+            isChecked = hasRead
         }
 
         ui.fullInfo.text = buildSpannedString {
@@ -151,18 +162,11 @@ class MainActivity : AppCompatActivity() {
                 setOnClickListener { setSelfAsDefault() }
                 contentDescription = getText(R.string.desc_enable_full_access)
             }
-            setCheckedActual(isDefault)
+            isChecked = isDefault
         }
-
-        updateNotification(
-            this@MainActivity,
-            appPreferences().showNotification,
-            hasRead,
-            isDefault
-        )
     }
 
-    private val launchForResult: (Intent) -> Unit =
+    private val launchForUpdate: (Intent) -> Unit =
         registerForActivityResult(StartActivityForResult()) { updateUi() }::launch
 
     private fun setSelfAsDefault() {
@@ -171,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val manager = getSystemService(RoleManager::class.java)
             val intent = manager.createRequestRoleIntent(ROLE_SMS)
-            launchForResult(intent)
+            launchForUpdate(intent)
         } else {
             changeDefaultOldMethod(packageName)
         }
@@ -185,15 +189,15 @@ class MainActivity : AppCompatActivity() {
             }
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
                 val intent = packageManager.getLaunchIntentForPackage(original)
-                if (intent != null) launchForResult(intent)
+                if (intent != null) launchForUpdate(intent)
             }
             else -> changeDefaultOldMethod(original)
         }
     }
 
-    private fun changeDefaultOldMethod(original: String) {
-        val intent = Intent(ACTION_CHANGE_DEFAULT)
-            .putExtra(EXTRA_PACKAGE_NAME, original)
-        launchForResult(intent)
+    private fun changeDefaultOldMethod(packageName: String) {
+        val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+            .putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+        launchForUpdate(intent)
     }
 }

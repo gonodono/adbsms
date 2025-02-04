@@ -13,12 +13,13 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import dev.gonodono.adbsms.MainActivity
 import dev.gonodono.adbsms.R
+import dev.gonodono.adbsms.getDefaultSmsPackage
 
 private const val REQUEST_CODE_READ = 0
 private const val REQUEST_CODE_FULL = 1
 private const val NOTIFICATION_ID = 137
-private const val CHANNEL_ID = "warnings"
-private const val CHANNEL_NAME = "Warnings"
+private const val CHANNEL_ID = "alerts"
+private const val CHANNEL_NAME = "Alerts"
 
 internal fun updateNotification(
     context: Context,
@@ -59,7 +60,7 @@ private fun postNotification(
         .setContentIntent(createActivityIntent(context, requestCode))
         .setDeleteIntent(createDeleteIntent(context))
         .setContentText(context.getText(textId))
-        .setContentTitle("Warning!")
+        .setContentTitle("Alert!")
         .setSmallIcon(iconId)
         .setOngoing(true)
         .build()
@@ -92,18 +93,18 @@ private fun createDeleteIntent(context: Context): PendingIntent? =
     PendingIntent.getBroadcast(
         context,
         0,
-        Intent(context, NotificationReceiver::class.java),
+        Intent(context, NotificationDeleteReceiver::class.java),
         FLAG_IMMUTABLE
     )
 
-class NotificationReceiver : BroadcastReceiver() {
+class NotificationDeleteReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         checkActivityIntent(context, REQUEST_CODE_READ)?.cancel()
         checkActivityIntent(context, REQUEST_CODE_FULL)?.cancel()
         updateNotification(
             context,
-            context.appPreferences().showNotification,
+            context.appPreferences().showAlerts,
             context.hasReadSmsPermission(),
             context.packageName == context.getDefaultSmsPackage()
         )

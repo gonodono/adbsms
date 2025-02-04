@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        val ui = ActivityMainBinding.inflate(layoutInflater).also { ui = it }
+        ui = ActivityMainBinding.inflate(layoutInflater)
         ui.root.applyInsetsListener()
         setContentView(ui.root)
 
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         updateUi()
     }
 
-    private fun updateUi() = ui.let { ui ->
+    private fun updateUi() {
         val hasRead = hasReadSmsPermission()
         val default = getDefaultSmsPackage()
         val isDefault = packageName == default

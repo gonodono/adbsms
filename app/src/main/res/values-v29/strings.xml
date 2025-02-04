@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="action_revert_default">Open previous default to revert</string>
-    <string name="label_full_revert">There\'s no way to programmatically select a separate app as the default on API levels 29+, so you\'ll have to revert to the original manually.\n\n<b>NB:</b> The warning notification will not update until you return to this app. Also, <tt>READ_SMS</tt> might be enabled afterward even if you didn\'t request it.</string>
-</resources>

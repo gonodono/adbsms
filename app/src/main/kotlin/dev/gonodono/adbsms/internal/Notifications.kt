@@ -50,8 +50,11 @@ private fun postNotification(
     ensureNotificationChannel(manager)
 
     val textId =
-        if (isDefault) R.string.warn_full_access else R.string.warn_read_enabled
-    val iconId = if (isDefault) R.drawable.ic_warning else R.drawable.ic_info
+        if (isDefault) R.string.status_full_access
+        else R.string.status_read_enabled
+    val iconId =
+        if (isDefault) R.drawable.ic_warn_full
+        else R.drawable.ic_warn_read
     val notification = NotificationCompat.Builder(context, CHANNEL_ID)
         .setContentIntent(createActivityIntent(context, requestCode))
         .setDeleteIntent(createDeleteIntent(context))

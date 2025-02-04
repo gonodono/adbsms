@@ -5,11 +5,12 @@ import android.Manifest.permission.READ_SMS
 import android.app.role.RoleManager
 import android.app.role.RoleManager.ROLE_SMS
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT
 import android.provider.Telephony.Sms.Intents.EXTRA_PACKAGE_NAME
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -22,10 +23,12 @@ import androidx.core.text.buildSpannedString
 import dev.gonodono.adbsms.databinding.ActivityMainBinding
 import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.applyInsetsListener
-import dev.gonodono.adbsms.internal.configureAsTabsFor
+import dev.gonodono.adbsms.internal.checkShowIntro
 import dev.gonodono.adbsms.internal.getDefaultSmsPackage
+import dev.gonodono.adbsms.internal.hasPostNotificationsPermission
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 import dev.gonodono.adbsms.internal.openAppSettings
+import dev.gonodono.adbsms.internal.setIcon
 import dev.gonodono.adbsms.internal.updateNotification
 
 // Most everything here isn't strictly necessary, apart from needing to launch
@@ -50,14 +53,12 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayShowCustomEnabled(true)
 
-        ui.basic.requestRead.setOnClickListener { requestPermission(READ_SMS) }
-        ui.basic.openSettings.setOnClickListener { openAppSettings() }
-        ui.full.setDefault.setOnClickListener { setSelfAsDefault() }
-        ui.full.revertDefault.setOnClickListener { revertDefault() }
-        ui.tabs.configureAsTabsFor(ui.switcher)
+        checkShowIntro(savedInstanceState, ::checkPostNotificationsPermission)
+    }
 
+    private fun checkPostNotificationsPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            checkSelfPermission(POST_NOTIFICATIONS) != PERMISSION_GRANTED
+            !hasPostNotificationsPermission()
         ) {
             requestPermission(POST_NOTIFICATIONS)
         }
@@ -71,10 +72,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menu ?: return false
-        appPreferences().run {
-            menu.findItem(R.id.option_banner).isChecked = showBanner
-            menu.findItem(R.id.option_notification).isChecked = showNotification
-        }
+        val item = menu.findItem(R.id.option_notification)
+        val canPost = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                hasPostNotificationsPermission()
+        item.isChecked = canPost && appPreferences().showNotification
+        item.isEnabled = canPost
         return true
     }
 
@@ -83,9 +85,6 @@ class MainActivity : AppCompatActivity() {
             // In case things get stuck due to bad timing with a launched op.
             R.id.option_refresh -> {
                 Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
-            }
-            R.id.option_banner -> {
-                appPreferences().apply { showBanner = !showBanner }
             }
             R.id.option_notification -> {
                 appPreferences().apply { showNotification = !showNotification }
@@ -106,53 +105,61 @@ class MainActivity : AppCompatActivity() {
         val default = getDefaultSmsPackage()
         val isDefault = packageName == default
 
-        ui.basic.basicInfo.isEnabled = !hasRead && !isDefault
-        ui.basic.requestRead.isEnabled = !hasRead && !isDefault
-        ui.basic.basicRevertInfo.isEnabled = hasRead && !isDefault
-        ui.basic.openSettings.isEnabled = hasRead && !isDefault
-
-        ui.full.fullInfo.isEnabled = !isDefault
-        ui.full.setDefault.isEnabled = !isDefault
-        ui.full.fullRevertInfo.isEnabled = isDefault
-        ui.full.revertDefault.isEnabled = isDefault
-
-        ui.full.currentDefault.text = buildSpannedString {
-            appendLine(getText(R.string.label_current_default))
-            append(default.toString())
+        ui.status.apply {
+            when {
+                isDefault -> {
+                    text = getText(R.string.status_full_access)
+                    setIcon(R.drawable.ic_warn_full)
+                }
+                hasRead -> {
+                    text = getText(R.string.status_read_enabled)
+                    setIcon(R.drawable.ic_warn_read)
+                }
+                else -> {
+                    text = getText(R.string.status_inactive)
+                    setIcon(0)
+                }
+            }
         }
 
-        if (isDefault) {
-            ui.tabBasic.isEnabled = false
-            ui.tabFull.isChecked = true
-        } else {
-            ui.tabBasic.isEnabled = true
+        ui.readInfo.isEnabled = !isDefault
+        ui.readSwitch.apply {
+            if (hasRead) {
+                setOnClickListener { openAppSettings() }
+                contentDescription = getText(R.string.desc_revert_read_only)
+            } else {
+                setOnClickListener { requestPermission(READ_SMS) }
+                contentDescription = getText(R.string.desc_enable_read_only)
+            }
+            setCheckedActual(hasRead)
+            isEnabled = !isDefault
         }
 
-        val preferences = appPreferences()
-        updateBanner(
-            preferences.showBanner,
-            hasRead,
-            isDefault
-        )
+        ui.fullInfo.text = buildSpannedString {
+            appendLine(getText(R.string.label_full_info))
+            append(
+                default.toString(),
+                RelativeSizeSpan(0.9F),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        ui.fullSwitch.apply {
+            if (isDefault) {
+                setOnClickListener { revertDefault() }
+                contentDescription = getText(R.string.desc_revert_full_access)
+            } else {
+                setOnClickListener { setSelfAsDefault() }
+                contentDescription = getText(R.string.desc_enable_full_access)
+            }
+            setCheckedActual(isDefault)
+        }
+
         updateNotification(
             this@MainActivity,
-            preferences.showNotification,
+            appPreferences().showNotification,
             hasRead,
             isDefault
         )
-    }
-
-    private fun updateBanner(
-        isEnabled: Boolean,
-        hasRead: Boolean,
-        isDefault: Boolean
-    ) {
-        val actionBar = supportActionBar ?: return
-        when {
-            !isEnabled || !isDefault && !hasRead -> actionBar.customView = null
-            isDefault -> actionBar.setCustomView(R.layout.ab_full_access)
-            else -> actionBar.setCustomView(R.layout.ab_read_enabled)
-        }
     }
 
     private val launchForResult: (Intent) -> Unit =

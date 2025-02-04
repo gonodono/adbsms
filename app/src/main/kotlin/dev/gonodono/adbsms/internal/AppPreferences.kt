@@ -9,9 +9,9 @@ internal fun Context.appPreferences(): AppPreferences =
 @JvmInline
 internal value class AppPreferences(private val sp: SharedPreferences) {
 
-    var showBanner: Boolean
-        get() = sp.getBoolean(PREF_SHOW_BANNER, true)
-        set(value) = sp.edit().putBoolean(PREF_SHOW_BANNER, value).apply()
+    var hideIntro: Boolean
+        get() = sp.getBoolean(PREF_HIDE_INTRO, false)
+        set(value) = sp.edit().putBoolean(PREF_HIDE_INTRO, value).apply()
 
     var showNotification: Boolean
         get() = sp.getBoolean(PREF_SHOW_NOTIFICATION, true)
@@ -22,6 +22,6 @@ internal value class AppPreferences(private val sp: SharedPreferences) {
         set(value) = sp.edit().putString(PREF_ORIGINAL_DEFAULT, value).apply()
 }
 
-private const val PREF_SHOW_BANNER = "show_banner"
+private const val PREF_HIDE_INTRO = "hide_intro"
 private const val PREF_SHOW_NOTIFICATION = "show_notification"
 private const val PREF_ORIGINAL_DEFAULT = "original_default"

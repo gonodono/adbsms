@@ -1,65 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:divider="@drawable/divider"
-    android:dividerPadding="@dimen/spacing_large"
-    android:orientation="vertical"
-    android:showDividers="middle"
-    tools:context=".MainActivity">
+    android:fillViewport="true">
 
-    <dev.gonodono.adbsms.internal.DualViewSwitcher
-        android:id="@+id/switcher"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/spacing_large"
-        android:layout_weight="1">
-
-        <include
-            android:id="@+id/basic"
-            layout="@layout/page_basic" />
-
-        <include
-            android:id="@+id/full"
-            layout="@layout/page_full" />
-
-    </dev.gonodono.adbsms.internal.DualViewSwitcher>
-
-    <RadioGroup
-        android:id="@+id/tabs"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_large"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_large">
 
-        <RadioButton
-            android:id="@+id/tab_basic"
-            android:layout_width="0dp"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/tab_left"
-            android:button="@null"
-            android:checked="true"
-            android:gravity="center"
-            android:minHeight="@dimen/min_tab_height"
-            android:text="@string/tab_basic_queries"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:background="@drawable/background_frame"
+            android:padding="@dimen/spacing_large">
 
-        <RadioButton
-            android:id="@+id/tab_full"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/tab_right"
-            android:button="@null"
-            android:gravity="center"
-            android:minHeight="@dimen/min_tab_height"
-            android:text="@string/tab_full_access"
-            android:textAppearance="?android:textAppearanceMedium" />
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:drawablePadding="@dimen/spacing_small"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="26sp"
+                tools:text="Inactive" />
 
-    </RadioGroup>
+        </FrameLayout>
 
-</LinearLayout>
+        <RelativeLayout
+            android:id="@+id/read"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_weight="2"
+            android:background="@drawable/background_frame"
+            android:padding="@dimen/spacing_large">
+
+            <TextView
+                android:id="@+id/read_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/read_switch"
+                android:lineSpacingMultiplier="1.3"
+                android:text="@string/label_read_info"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="18sp" />
+
+            <dev.gonodono.adbsms.internal.ButtonSwitch
+                android:id="@+id/read_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/spacing_small"
+                android:contentDescription="@string/desc_enable_read_only"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:textAllCaps="false"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="18sp"
+                app:switchPadding="@dimen/spacing_large"
+                tools:text="Enable" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/full"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_weight="3"
+            android:background="@drawable/background_frame"
+            android:padding="@dimen/spacing_large">
+
+            <TextView
+                android:id="@+id/full_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/full_switch"
+                android:lineSpacingMultiplier="1.3"
+                android:text="@string/label_full_info"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="18sp" />
+
+            <dev.gonodono.adbsms.internal.ButtonSwitch
+                android:id="@+id/full_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/spacing_small"
+                android:contentDescription="@string/desc_enable_full_access"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:textAllCaps="false"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="18sp"
+                app:switchPadding="@dimen/spacing_large"
+                tools:text="Enable" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>

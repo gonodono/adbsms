@@ -4,6 +4,12 @@ A simple Android app that exposes an unprotected `ContentProvider` that relays
 operations to the SMS Provider, allowing messages to be queried and modified
 over adb without causing a `SecurityException` due to missing permissions.
 
+<p align="center">
+<img src="images/screenshots.png"
+alt="Screenshots of the app in light and dark modes."
+width="20%" />
+</p>
+
 <br />
 
 > [!CAUTION]
@@ -16,14 +22,14 @@ over adb without causing a `SecurityException` due to missing permissions.
 
 ## Overview
 
-The app offers two levels of access to the SMS Provider.
+The app offers two levels of access to the SMS Provider:
 
-+ **Basic queries:** Requesting the `READ_SMS` permission directly
++ Read-only, by acquiring the `READ_SMS` permission.
 
-  This read-only option is the most straightforward of the two. On Marshmallow
-  and above, however, you'll be able to view only _inbox_ and _sent_ messages.
+  This option is the most straightforward of the two. However, on Marshmallow
+  and above, you will be able to view only _inbox_ and _sent_ messages.
 
-+ **Full access:** Temporarily setting adbsms as the default SMS app
++ Full access, by assuming the default SMS app role.
 
   This option will grant you full read and write access on each applicable
   version, but all messaging functionality will be broken while adbsms is the

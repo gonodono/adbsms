@@ -10,12 +10,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/option_banner"
-        android:checkable="true"
-        android:title="@string/menu_warning_banner"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/option_notification"
         android:checkable="true"
         android:title="@string/menu_warning_notification"

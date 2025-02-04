@@ -3,27 +3,29 @@
     <string name="app_name">adbsms</string>
     <string name="caveat">This is <b><i>not</i></b> a functional SMS app.</string>
 
-    <string name="warn_read_enabled">Read enabled</string>
-    <string name="warn_full_access">FULL ACCESS!!</string>
+    <string name="header_intro">Notes</string>
+    <string name="text_intro">• On Marshmallow and above (API levels 23+), the read-only option gives access to only <i>sent</i> and <i>inbox</i> messages.\n\n• Apps can\'t revoke permissions, so reverting the read-only option must be done manually through Settings, which should open automatically upon selecting that option.\n\n• On API levels 29+, the default SMS app must also be reverted manually, through the previous one, which should also open automatically.\n\n• Disabling the full access option will oftentimes leave the read-only access enabled, even if you hadn\'t explicitly enabled it beforehand.\n\n• The warning notification, if enabled, will not update until this app resumes, should a launched operation pause it.</string>
+    <string name="label_hide_intro">Don\'t show again</string>
 
-    <string name="tab_basic_queries">Basic queries</string>
-    <string name="tab_full_access">Full access</string>
+    <string name="status_inactive"><b>Inactive</b></string>
+    <string name="status_read_enabled"><b>Read enabled!</b></string>
+    <string name="status_full_access"><b>FULL ACCESS!!</b></string>
+
     <string name="menu_refresh_ui">Refresh UI</string>
-    <string name="menu_warning_banner">Warning banner</string>
     <string name="menu_warning_notification">Warning notification</string>
     <string name="refreshed">Refreshed</string>
 
-    <string name="label_basic_info">The base functionality requires just the <tt>READ_SMS</tt> permission, but only <i>inbox</i> and <i>sent</i> messages can be seen by non-default apps on Marshmallow and above (API levels 23+).</string>
-    <string name="label_basic_revert">Turning this off has to be handled manually in Settings, since an app can\'t revoke a permission for itself.\n\n<b>NB:</b> The warning notification will not update until you return to this app.</string>
-    <string name="action_request_permission">Request <tt>READ_SMS</tt> permission</string>
-    <string name="action_open_settings">Open Settings to revoke</string>
+    <string name="label_read_info"><big><b>Read-only</b></big>\nUsing the <tt>READ_SMS</tt> permission</string>
+    <string name="label_full_info"><big><b>Full access</b></big>\nUsing the default SMS app role\n\nCurrent default:</string>
     <string name="error_settings">Error. Open manually.</string>
-
-    <string name="label_full_info">Temporarily setting adbsms as the default SMS app will enable full read and write access, but you will lose all messaging functionality for the duration.</string>
-    <string name="label_full_revert"><b>NB:</b> <tt>READ_SMS</tt> might be enabled afterward even if you didn\'t request it.</string>
-    <string name="label_current_default"><b><u>Current default:</u></b></string>
-    <string name="action_set_default">Set adbsms as default</string>
-    <string name="action_revert_default">Reset default to previous</string>
     <string name="error_revert">Error. Revert manually.</string>
+
+    <string name="label_enable">Enable</string>
+    <string name="label_revert">Revert</string>
+
+    <string name="desc_enable_read_only">Enable read-only</string>
+    <string name="desc_revert_read_only">Revert read-only</string>
+    <string name="desc_enable_full_access">Enable full access</string>
+    <string name="desc_revert_full_access">Revert full access</string>
 
 </resources>

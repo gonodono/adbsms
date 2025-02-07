@@ -3,16 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/option_refresh"
+        android:id="@+id/option_refresh_ui"
         android:icon="@drawable/ic_refresh"
-        android:title="@string/menu_refresh"
-        app:iconTint="?android:textColorPrimary"
+        android:title="@string/menu_refresh_ui"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/option_status"
+        android:id="@+id/option_show_status"
         android:checkable="true"
-        android:title="@string/menu_status"
+        android:title="@string/menu_show_status"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/option_check_caller"
+        android:checkable="true"
+        android:title="@string/menu_check_caller"
         app:showAsAction="never" />
 
 </menu>

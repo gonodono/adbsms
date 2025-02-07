@@ -5,6 +5,9 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import android.os.Binder
+import androidx.core.content.ContentProviderCompat
+import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 
 class AdbSmsProvider : ContentProvider() {
@@ -17,47 +20,66 @@ class AdbSmsProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?,
         sortOrder: String?
-    ): Cursor? =
-        requireContentResolver().query(
+    ): Cursor? {
+        checkCallingProcess()
+        return requireContentResolver().query(
             uri.toSmsUri(),
             projection,
             selection,
             selectionArgs,
             sortOrder
         )
+    }
 
-    override fun getType(uri: Uri): String? =
-        requireContentResolver().getType(uri.toSmsUri())
+    override fun getType(uri: Uri): String? {
+        checkCallingProcess()
+        return requireContentResolver().getType(uri.toSmsUri())
+    }
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri? =
-        requireContentResolver().insert(uri.toSmsUri(), values)
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+        checkCallingProcess()
+        return requireContentResolver().insert(uri.toSmsUri(), values)
+    }
 
     override fun delete(
         uri: Uri,
         selection: String?,
         selectionArgs: Array<out String>?
-    ): Int =
-        requireContentResolver().delete(
+    ): Int {
+        checkCallingProcess()
+        return requireContentResolver().delete(
             uri.toSmsUri(),
             selection,
             selectionArgs
         )
+    }
 
     override fun update(
         uri: Uri,
         values: ContentValues?,
         selection: String?,
         selectionArgs: Array<out String>?
-    ): Int =
-        requireContentResolver().update(
+    ): Int {
+        checkCallingProcess()
+        return requireContentResolver().update(
             uri.toSmsUri(),
             values,
             selection,
             selectionArgs
         )
+    }
 
-    private fun requireContentResolver(): ContentResolver =
-        checkNotNull(context?.contentResolver) { "Cannot find ContentResolver" }
+    private fun checkCallingProcess() {
+        val context = ContentProviderCompat.requireContext(this)
+        if (!context.appPreferences().checkCaller) return
+        if (Binder.getCallingUid() != 2000) throw SecurityException()
+        if (callingPackage != "com.android.shell") throw SecurityException()
+    }
+}
+
+private fun ContentProvider.requireContentResolver(): ContentResolver {
+    val context = ContentProviderCompat.requireContext(this)
+    return checkNotNull(context.contentResolver) { "Cannot find ContentResolver" }
 }
 
 private fun Uri.toSmsUri(): Uri =

@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/option_sms_app_log"
+        android:id="@+id/option_log_receipts"
         android:checkable="true"
-        android:title="@string/menu_sms_app_log" />
+        android:title="@string/menu_log_receipts" />
 
     <item
-        android:id="@+id/option_sms_app_notify"
+        android:id="@+id/option_notify_receipts"
         android:checkable="true"
-        android:title="@string/menu_sms_app_notify" />
+        android:title="@string/menu_notify_receipts" />
 
     <item
-        android:id="@+id/option_sms_app_store_sms"
+        android:id="@+id/option_store_received_sms"
         android:checkable="true"
-        android:title="@string/menu_sms_app_store_sms" />
+        android:title="@string/menu_store_received_sms" />
 
 </menu>

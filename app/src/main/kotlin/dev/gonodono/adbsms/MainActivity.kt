@@ -18,6 +18,7 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.text.buildSpannedString
@@ -129,15 +130,15 @@ class MainActivity : AppCompatActivity() {
         val preferences = appPreferences()
         val canPost = canPostNotifications()
 
-        val log = menu.findItem(R.id.option_sms_app_log)
-        log.isChecked = preferences.smsAppLog
+        val log = menu.findItem(R.id.option_log_receipts)
+        log.isChecked = preferences.logReceipts
 
-        val notify = menu.findItem(R.id.option_sms_app_notify)
-        notify.isChecked = canPost && preferences.smsAppNotify
+        val notify = menu.findItem(R.id.option_notify_receipts)
+        notify.isChecked = canPost && preferences.notifyReceipts
         notify.isEnabled = canPost
 
-        val store = menu.findItem(R.id.option_sms_app_store_sms)
-        store.isChecked = preferences.smsAppStoreSms
+        val store = menu.findItem(R.id.option_store_received_sms)
+        store.isChecked = preferences.storeReceivedSms
 
         show()
     }
@@ -154,43 +155,65 @@ class MainActivity : AppCompatActivity() {
         val preferences = appPreferences()
         val canPost = canPostNotifications()
 
-        val status = menu.findItem(R.id.option_status)
+        val status = menu.findItem(R.id.option_show_status)
         status.isChecked = canPost && preferences.showStatus
         status.isEnabled = canPost
+
+        val check = menu.findItem(R.id.option_check_caller)
+        check.isChecked = preferences.checkCaller
 
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val preferences = appPreferences()
+
         when (item.itemId) {
             // In case things get stuck due to bad timing with a launched op.
-            R.id.option_refresh -> {
+            R.id.option_refresh_ui -> {
                 Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
                 updateUi()
             }
-            R.id.option_status -> {
+            R.id.option_show_status -> {
                 preferences.showStatus = !preferences.showStatus
                 updateStatusNotification(this)
             }
-            R.id.option_sms_app_log -> {
-                preferences.smsAppLog = !preferences.smsAppLog
+            R.id.option_check_caller -> {
+                if (preferences.checkCaller) {
+                    showCheckCallingProcessDisableWarning {
+                        preferences.checkCaller = false
+                    }
+                } else {
+                    preferences.checkCaller = true
+                }
             }
-            R.id.option_sms_app_notify -> {
-                preferences.smsAppNotify = !preferences.smsAppNotify
+            R.id.option_log_receipts -> {
+                preferences.logReceipts = !preferences.logReceipts
             }
-            R.id.option_sms_app_store_sms -> {
-                preferences.smsAppStoreSms = !preferences.smsAppStoreSms
+            R.id.option_notify_receipts -> {
+                preferences.notifyReceipts = !preferences.notifyReceipts
+            }
+            R.id.option_store_received_sms -> {
+                preferences.storeReceivedSms = !preferences.storeReceivedSms
             }
         }
         return true
+    }
+
+    private fun showCheckCallingProcessDisableWarning(onOk: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.title_check_disable)
+            .setMessage(R.string.text_check_disable)
+            .setNegativeButton(R.string.label_check_cancel, null)
+            .setPositiveButton(R.string.label_check_ok) { _, _ -> onOk() }
+            .show()
     }
 
     private val launchForUpdate: (Intent) -> Unit =
         registerForActivityResult(StartActivityForResult()) { updateUi() }::launch
 
     private fun setSelfAsDefaultSmsApp() {
-        appPreferences().originalDefaultSmsApp = getDefaultSmsPackage()
+        appPreferences().originalDefault = getDefaultSmsPackage()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val manager = getSystemService(RoleManager::class.java)
@@ -202,7 +225,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun revertDefaultSmsApp() {
-        val original = appPreferences().originalDefaultSmsApp
+        val original = appPreferences().originalDefault
         when {
             original == null -> {
                 Toast.makeText(this, R.string.error_revert, LENGTH_SHORT).show()

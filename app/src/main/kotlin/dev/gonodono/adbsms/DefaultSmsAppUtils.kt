@@ -44,9 +44,9 @@ class SmsReceiver : BroadcastReceiver() {
         val preferences = context.appPreferences()
         val values = messages.toContentValues(context)
 
-        if (preferences.smsAppLog) Log.w(TAG, values.toString())
+        if (preferences.logReceipts) Log.w(TAG, values.toString())
 
-        if (preferences.smsAppStoreSms) {
+        if (preferences.storeReceivedSms) {
             context.contentResolver.insert(Telephony.Sms.CONTENT_URI, values)
         }
     }
@@ -54,7 +54,7 @@ class SmsReceiver : BroadcastReceiver() {
 
 private fun SmsMessage.sender(context: Context): String {
     val address = displayOriginatingAddress ?: return "Unknown"
-    if (address.contains("@")) return address  // <- Naive email check
+    if (address.contains("@")) return address  // Naive email check
     val country = context.resources.configuration.locales[0].country
     val code = if (country.isDigitsOnly()) "US" else country
     return PhoneNumberUtils.formatNumber(address, code) ?: address
@@ -117,6 +117,6 @@ private fun logInvalidBroadcast(intent: Intent, receiver: String) {
 private fun logAndNotify(context: Context, event: String) {
     val preferences = context.appPreferences()
     val message = "$event while adbsms is the default SMS app"
-    if (preferences.smsAppLog) Log.w(TAG, message)
-    if (preferences.smsAppNotify) postSmsAppNotification(context, message)
+    if (preferences.logReceipts) Log.w(TAG, message)
+    if (preferences.notifyReceipts) postSmsAppNotification(context, message)
 }

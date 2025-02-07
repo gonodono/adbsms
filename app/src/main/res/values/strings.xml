@@ -13,11 +13,17 @@
 
     <string name="refreshed">Refreshed</string>
 
-    <string name="menu_refresh">Refresh UI</string>
-    <string name="menu_status">Status notifications</string>
-    <string name="menu_sms_app_log">Log receipts</string>
-    <string name="menu_sms_app_notify">Notify receipts</string>
-    <string name="menu_sms_app_store_sms">Store rec\'d SMS</string>
+    <string name="menu_refresh_ui">Refresh UI</string>
+    <string name="menu_show_status">Status notifications</string>
+    <string name="menu_check_caller">Check calling process</string>
+    <string name="menu_log_receipts">Log receipts</string>
+    <string name="menu_notify_receipts">Notify receipts</string>
+    <string name="menu_store_received_sms">Store rec\'d SMS</string>
+
+    <string name="title_check_disable"><b><font color="#FF0000">Caution!</font></b></string>
+    <string name="text_check_disable"><b>You are disabling a security measure!</b>\n\nThis should be disabled only if <i>absolutely necessary</i>. That is, only if this check is preventing authorized access.</string>
+    <string name="label_check_cancel">Cancel</string>
+    <string name="label_check_ok">I understand</string>
 
     <string name="label_read_info"><big><b>Read-only</b></big>\nUsing the <tt>READ_SMS</tt> permission</string>
     <string name="label_full_info"><big><b>Full access</b></big>\nUsing the default SMS app role\n\nCurrent default:</string>

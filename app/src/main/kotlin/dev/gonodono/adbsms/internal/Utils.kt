@@ -24,6 +24,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
+import dev.gonodono.adbsms.BuildConfig
 import dev.gonodono.adbsms.R
 
 internal const val TAG = "adbsms"
@@ -69,7 +70,7 @@ internal fun Context.openAppSettings() {
     try {
         startActivity(intent)
     } catch (e: ActivityNotFoundException) {
-        Log.d(TAG, "Error opening Settings", e)
+        if (BuildConfig.DEBUG) Log.d(TAG, "Error opening Settings", e)
         Toast.makeText(this, R.string.error_settings, LENGTH_SHORT).show()
     }
 }
@@ -77,6 +78,10 @@ internal fun Context.openAppSettings() {
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 internal fun Context.hasPostNotificationsPermission(): Boolean =
     checkSelfPermission(POST_NOTIFICATIONS) == PERMISSION_GRANTED
+
+internal fun Context.canPostNotifications(): Boolean =
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            hasPostNotificationsPermission()
 
 internal fun Context.hasReadSmsPermission(): Boolean =
     checkSelfPermission(READ_SMS) == PERMISSION_GRANTED

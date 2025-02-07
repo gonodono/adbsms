@@ -10,30 +10,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/option_alerts"
+        android:id="@+id/option_status"
         android:checkable="true"
-        android:title="@string/menu_alerts"
+        android:title="@string/menu_status"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/option_default"
-        android:title="@string/menu_default"
-        app:showAsAction="never">
-
-        <menu>
-
-            <item
-                android:id="@+id/option_log"
-                android:checkable="true"
-                android:title="@string/menu_log" />
-
-            <item
-                android:id="@+id/option_save"
-                android:checkable="true"
-                android:title="@string/menu_save" />
-
-        </menu>
-
-    </item>
 
 </menu>

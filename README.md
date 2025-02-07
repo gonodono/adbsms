@@ -13,10 +13,11 @@ width="25%" />
 <br />
 
 > [!CAUTION]
-> All SMS Provider operations are guarded by dangerous permissions. This app
-> effectively bypasses the security and privacy measures provided by that
-> mechanism, and could potentially be exploited by a malicious actor. It should
-> be disabled or uninstalled when not in use. <b>Use at your own risk!</b>
+> All SMS Provider operations are guarded by dangerous permissions and/or role
+> requirements. This app effectively allows other apps to bypass the security
+> and privacy measures provided by those mechanisms, and could potentially be
+> exploited by malicious actors. It should always be disabled or uninstalled
+> when not in use. <b>Use at your own risk!</b>
 
 <br />
 
@@ -37,8 +38,8 @@ The app offers two levels of access to the SMS Provider:
   processing and storage. Nothing else is handled, aside from some very
   simplistic event logs, and there is no way to send anything out.
 
-After enabling the desired option, queries can be made like they usually are
-over adb by replacing the authority in any `content://sms` URI with `adbsms`.
+After enabling the desired option, queries can be made as they usually are over
+adb by replacing the authority in any `content://sms` URI with `adbsms`.
 
 ### Examples
 
@@ -101,9 +102,9 @@ following table.
 
 ## Notes
 
-+ If you plan to use the default SMS app option in order to get at the hidden
-  types, you should know that not all SMS apps utilize each one. Though most
-  use Inbox and Sent consistently, it seems that many apps simply don't use
++ If you plan to use the Full access option in order to get at the hidden
+  message types, you should know that not all SMS apps utilize each one. Though
+  most use Inbox and Sent consistently, it seems that many apps simply don't use
   Draft and/or the others at all. I'm guessing they save those messages to
   internal storage instead, for some reason. Just a heads up.
 

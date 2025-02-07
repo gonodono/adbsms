@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/option_sms_app_log"
+        android:checkable="true"
+        android:title="@string/menu_sms_app_log" />
+
+    <item
+        android:id="@+id/option_sms_app_notify"
+        android:checkable="true"
+        android:title="@string/menu_sms_app_notify" />
+
+    <item
+        android:id="@+id/option_sms_app_store_sms"
+        android:checkable="true"
+        android:title="@string/menu_sms_app_store_sms" />
+
+</menu>

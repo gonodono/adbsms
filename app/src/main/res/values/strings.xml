@@ -4,7 +4,7 @@
     <string name="caveat">This is <b><i>not</i></b> a functional SMS app.</string>
 
     <string name="header_intro">adbsms Intro</string>
-    <string name="text_intro">• Regular apps cannot revoke permissions, so reverting the Read-only option must be handled manually through Settings, which should open directly upon selecting that option.\n\n• On API levels 29+, the default SMS app also must be reverted manually. This is accomplished by directing the previous app to re-set itself, and it too should open directly.\n\n• Disabling the Full access option will oftentimes leave the Read-only option enabled, even if you hadn\'t explicitly enabled that option beforehand.\n\n• The alert notification, if enabled, will not update until this app resumes, should a launched operation pause it.</string>
+    <string name="text_intro">• Regular apps can\'t revoke permissions until API level 33, and even then it\'s cumbersome, so reverting the Read-only option here is handled manually through Settings, which should open directly upon selecting that option.\n\n• On API levels 29+, the default SMS app is also reverted manually. This is accomplished by re-setting the original from within the app itself, and it too should open directly.\n\n• In some cases, disabling the Full access option will leave the Read-only option enabled, even if you hadn\'t explicitly enabled that option beforehand.\n\n• The status notification, if enabled, will not update until this app resumes, should a launched operation have paused it.</string>
     <string name="label_hide_intro">Don\'t show again</string>
 
     <string name="status_inactive"><b>Inactive</b></string>
@@ -12,11 +12,12 @@
     <string name="status_full_access"><b>Full access!!</b></string>
 
     <string name="refreshed">Refreshed</string>
+
     <string name="menu_refresh">Refresh UI</string>
-    <string name="menu_alerts">Alert notifications</string>
-    <string name="menu_default">Default app duties</string>
-    <string name="menu_log">Log rec\'d SMS</string>
-    <string name="menu_save">Save rec\'d SMS</string>
+    <string name="menu_status">Status notifications</string>
+    <string name="menu_sms_app_log">Log receipts</string>
+    <string name="menu_sms_app_notify">Notify receipts</string>
+    <string name="menu_sms_app_store_sms">Store rec\'d SMS</string>
 
     <string name="label_read_info"><big><b>Read-only</b></big>\nUsing the <tt>READ_SMS</tt> permission</string>
     <string name="label_full_info"><big><b>Full access</b></big>\nUsing the default SMS app role\n\nCurrent default:</string>
@@ -30,5 +31,6 @@
     <string name="desc_revert_read_only">Revert read-only</string>
     <string name="desc_enable_full_access">Enable full access</string>
     <string name="desc_revert_full_access">Revert full access</string>
+    <string name="desc_sms_app_options">SMS app options</string>
 
 </resources>

@@ -85,6 +85,17 @@
                 android:textColor="?android:textColorPrimary"
                 android:textSize="18sp" />
 
+            <ImageButton
+                android:id="@+id/sms_app_options"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="-15dp"
+                android:layout_marginEnd="-20dp"
+                android:background="@drawable/background_ripple"
+                android:contentDescription="@string/desc_sms_app_options"
+                android:src="@drawable/ic_overflow" />
+
             <dev.gonodono.adbsms.internal.ButtonSwitch
                 android:id="@+id/full_switch"
                 android:layout_width="wrap_content"

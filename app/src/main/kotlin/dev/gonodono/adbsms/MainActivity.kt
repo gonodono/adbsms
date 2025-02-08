@@ -7,7 +7,7 @@ import android.app.role.RoleManager.ROLE_SMS
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Telephony
+import android.provider.Telephony.Sms
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
@@ -18,7 +18,6 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.text.buildSpannedString
@@ -30,7 +29,6 @@ import dev.gonodono.adbsms.internal.checkShowIntro
 import dev.gonodono.adbsms.internal.hasPostNotificationsPermission
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 import dev.gonodono.adbsms.internal.openAppSettings
-import dev.gonodono.adbsms.internal.setIcon
 import dev.gonodono.adbsms.internal.updateStatusNotification
 
 class MainActivity : AppCompatActivity() {
@@ -69,23 +67,6 @@ class MainActivity : AppCompatActivity() {
         val hasRead = hasReadSmsPermission()
         val default = getDefaultSmsPackage()
         val isDefault = packageName == default
-
-        ui.status.apply {
-            when {
-                isDefault -> {
-                    text = getText(R.string.status_full_access)
-                    setIcon(R.drawable.ic_warn_full)
-                }
-                hasRead -> {
-                    text = getText(R.string.status_read_enabled)
-                    setIcon(R.drawable.ic_warn_read)
-                }
-                else -> {
-                    text = getText(R.string.status_inactive)
-                    setIcon(0)
-                }
-            }
-        }
 
         ui.readInfo.isEnabled = !isDefault
         ui.readSwitch.apply {
@@ -159,9 +140,6 @@ class MainActivity : AppCompatActivity() {
         status.isChecked = canPost && preferences.showStatus
         status.isEnabled = canPost
 
-        val check = menu.findItem(R.id.option_check_caller)
-        check.isChecked = preferences.checkCaller
-
         return true
     }
 
@@ -178,15 +156,6 @@ class MainActivity : AppCompatActivity() {
                 preferences.showStatus = !preferences.showStatus
                 updateStatusNotification(this)
             }
-            R.id.option_check_caller -> {
-                if (preferences.checkCaller) {
-                    showCheckCallingProcessDisableWarning {
-                        preferences.checkCaller = false
-                    }
-                } else {
-                    preferences.checkCaller = true
-                }
-            }
             R.id.option_log_receipts -> {
                 preferences.logReceipts = !preferences.logReceipts
             }
@@ -198,15 +167,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return true
-    }
-
-    private fun showCheckCallingProcessDisableWarning(onOk: () -> Unit) {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.title_check_disable)
-            .setMessage(R.string.text_check_disable)
-            .setNegativeButton(R.string.label_check_cancel, null)
-            .setPositiveButton(R.string.label_check_ok) { _, _ -> onOk() }
-            .show()
     }
 
     private val launchForUpdate: (Intent) -> Unit =
@@ -239,8 +199,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun changeDefaultSmsAppOldMethod(packageName: String) {
-        val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-            .putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+        val intent = Intent(Sms.Intents.ACTION_CHANGE_DEFAULT)
+            .putExtra(Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
         launchForUpdate(intent)
     }
 }

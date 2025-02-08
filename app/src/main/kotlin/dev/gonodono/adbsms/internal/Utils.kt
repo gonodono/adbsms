@@ -4,6 +4,7 @@ import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_SMS
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -15,10 +16,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.CheckBox
-import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
@@ -26,6 +25,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import dev.gonodono.adbsms.BuildConfig
 import dev.gonodono.adbsms.R
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 internal const val TAG = "adbsms"
 
@@ -35,9 +41,9 @@ internal fun Activity.checkShowIntro(
 ) {
     if (savedInstanceState == null && !appPreferences().hideIntro) {
         AlertDialog.Builder(this)
-            .setOnDismissListener { onFinished() }
             .setView(R.layout.dialog_intro)
             .setPositiveButton("Close", null)
+            .setOnDismissListener { onFinished() }
             .show()
             .findViewById<CheckBox>(R.id.hide_welcome)
             ?.setOnCheckedChangeListener { _, isChecked ->
@@ -61,9 +67,6 @@ internal fun View.applyInsetsListener() {
     }
 }
 
-internal fun TextView.setIcon(@DrawableRes drawable: Int) =
-    setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, 0, 0, 0)
-
 internal fun Context.openAppSettings() {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         .setData(Uri.fromParts("package", packageName, null))
@@ -85,3 +88,27 @@ internal fun Context.canPostNotifications(): Boolean =
 
 internal fun Context.hasReadSmsPermission(): Boolean =
     checkSelfPermission(READ_SMS) == PERMISSION_GRANTED
+
+internal fun BroadcastReceiver.doAsync(
+    coroutineContext: CoroutineContext = Dispatchers.Default,
+    onError: (Throwable) -> Unit = {},
+    block: suspend CoroutineScope.() -> Unit
+) {
+    val pendingResult = goAsync()
+    val scope = CoroutineScope(coroutineContext)
+    scope.launch {
+        try {
+            try {
+                coroutineScope(block)
+            } catch (e: CancellationException) {
+                // No rethrow. scope is cancelled anyway.
+            } catch (e: Throwable) {
+                onError(e)
+            } finally {
+                scope.cancel()
+            }
+        } finally {
+            pendingResult.finish()
+        }
+    }
+}

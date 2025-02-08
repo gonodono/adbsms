@@ -1,13 +1,15 @@
 # adbsms
 
-A simple Android app that relays SMS content operation requests from adb to the
-SMS Provider, allowing messages to be queried and modified over the debug bridge
-without causing a `SecurityException` due to missing permissions.
+A simple Android app with a `ContentProvider` that relays requests from adb to
+the SMS Provider, allowing messages to be queried and modified over the debug
+bridge without causing `SecurityException`s due to missing permissions.
+
+<br />
 
 <p align="center">
 <img src="images/screenshots.png"
 alt="Screenshots of the app in light and dark modes."
-width="25%" />
+width="30%" />
 </p>
 
 <br />
@@ -21,13 +23,14 @@ The app offers two levels of access to the SMS Provider:
   This option is the most straightforward of the two. However, on Marshmallow
   and above, you will be able to view only `inbox` and `sent` messages.
 
-+ Full access, by assuming the default SMS app role.
++ Full access, by temporarily assuming the default SMS app role.
 
   This one will grant you full read and write access on each applicable version,
   but your messaging will be largely nonfunctional while adbsms is the default.
   The only fallback facility currently provided is (optional) incoming SMS
-  processing and storage. Nothing else is handled, aside from some very
-  simplistic event logs, and there is no way to send anything out.
+  processing and storage to the Provider. Nothing else is handled, aside from
+  some very simplistic event logs for a few things, and there is no way to send
+  anything out.
 
 After enabling the desired option, queries can be made as they usually are over
 adb by replacing the authority in any `content://sms` URI with `adbsms`.
@@ -93,16 +96,9 @@ given in the following table.
 
 ## Notes
 
-+ By default, all Provider operation requests are guarded by a check against
-  the calling process, ensuring that they're coming from the system's `shell`
-  user. If your environment is somehow different than expected, and this check
-  ends up preventing valid calls, it can be disabled through an item in the main
-  options menu.
-
-  However, this will effectively leave open an unsecured endpoint, which could
-  potentially be exploited by malicious actors. If you're running this on an
-  actual user device, that check should be disabled only if absolutely
-  necessary, and then re-enabled as soon as possible.
++ All Provider operation requests are now guarded by a check against the calling 
+  process to ensure that they're coming from the adb daemon. The Caution alert
+  formerly found in this README's intro no longer applies.   
 
 + If you plan to use the Full access option in order to get at the hidden
   message types, you should know that not all SMS apps utilize each one. Though

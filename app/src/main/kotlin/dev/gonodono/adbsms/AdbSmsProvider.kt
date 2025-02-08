@@ -7,7 +7,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Binder
 import androidx.core.content.ContentProviderCompat
-import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 
 class AdbSmsProvider : ContentProvider() {
@@ -22,7 +21,7 @@ class AdbSmsProvider : ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         checkCallingProcess()
-        return requireContentResolver().query(
+        return contentResolver.query(
             uri.toSmsUri(),
             projection,
             selection,
@@ -33,12 +32,12 @@ class AdbSmsProvider : ContentProvider() {
 
     override fun getType(uri: Uri): String? {
         checkCallingProcess()
-        return requireContentResolver().getType(uri.toSmsUri())
+        return contentResolver.getType(uri.toSmsUri())
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         checkCallingProcess()
-        return requireContentResolver().insert(uri.toSmsUri(), values)
+        return contentResolver.insert(uri.toSmsUri(), values)
     }
 
     override fun delete(
@@ -47,7 +46,7 @@ class AdbSmsProvider : ContentProvider() {
         selectionArgs: Array<out String>?
     ): Int {
         checkCallingProcess()
-        return requireContentResolver().delete(
+        return contentResolver.delete(
             uri.toSmsUri(),
             selection,
             selectionArgs
@@ -61,7 +60,7 @@ class AdbSmsProvider : ContentProvider() {
         selectionArgs: Array<out String>?
     ): Int {
         checkCallingProcess()
-        return requireContentResolver().update(
+        return contentResolver.update(
             uri.toSmsUri(),
             values,
             selection,
@@ -70,17 +69,13 @@ class AdbSmsProvider : ContentProvider() {
     }
 
     private fun checkCallingProcess() {
-        val context = ContentProviderCompat.requireContext(this)
-        if (!context.appPreferences().checkCaller) return
         if (Binder.getCallingUid() != 2000) throw SecurityException()
         if (callingPackage != "com.android.shell") throw SecurityException()
     }
 }
 
-private fun ContentProvider.requireContentResolver(): ContentResolver {
-    val context = ContentProviderCompat.requireContext(this)
-    return checkNotNull(context.contentResolver) { "Cannot find ContentResolver" }
-}
+private inline val ContentProvider.contentResolver: ContentResolver
+    get() = ContentProviderCompat.requireContext(this).contentResolver
 
 private fun Uri.toSmsUri(): Uri =
     Uri.Builder()

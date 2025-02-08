@@ -56,15 +56,12 @@ private fun postStatusNotification(
     val textId =
         if (isDefault) R.string.status_full_access
         else R.string.status_read_enabled
-    val iconId =
-        if (isDefault) R.drawable.ic_warn_full
-        else R.drawable.ic_warn_read
     val notification = NotificationCompat.Builder(context, STATUS_CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_notification)
+        .setContentTitle(context.getText(R.string.notification_title_status))
+        .setContentText(context.getText(textId))
         .setContentIntent(createActivityIntent(context, requestCode))
         .setDeleteIntent(createStatusDeleteIntent(context))
-        .setContentText(context.getText(textId))
-        .setContentTitle(STATUS_CHANNEL_NAME)
-        .setSmallIcon(iconId)
         .setOngoing(true)
         .build()
     manager.notify(STATUS_NOTIFICATION_ID, notification)
@@ -124,10 +121,10 @@ internal fun postSmsAppNotification(context: Context, text: CharSequence) {
     manager.ensureChannel(SMS_APP_CHANNEL_ID, SMS_APP_CHANNEL_NAME)
 
     val notification = NotificationCompat.Builder(context, SMS_APP_CHANNEL_ID)
-        .setContentIntent(createActivityIntent(context, SMS_APP_REQUEST_CODE))
+        .setSmallIcon(R.drawable.ic_notification)
+        .setContentTitle(context.getText(R.string.notification_title_app))
         .setContentText(text)
-        .setContentTitle(SMS_APP_CHANNEL_NAME)
-        .setSmallIcon(R.drawable.ic_warn_full)
+        .setContentIntent(createActivityIntent(context, SMS_APP_REQUEST_CODE))
         .setAutoCancel(true)
         .build()
     val id = context.appPreferences().nextSmsAppNotificationId()

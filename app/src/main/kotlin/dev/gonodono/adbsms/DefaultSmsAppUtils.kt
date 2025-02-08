@@ -9,7 +9,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.Telephony
+import android.provider.Telephony.Sms
+import android.provider.Telephony.Threads
 import android.telephony.PhoneNumberUtils
 import android.telephony.SmsMessage
 import android.util.Log
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.isDigitsOnly
 import dev.gonodono.adbsms.internal.TAG
 import dev.gonodono.adbsms.internal.appPreferences
+import dev.gonodono.adbsms.internal.doAsync
 import dev.gonodono.adbsms.internal.postSmsAppNotification
 
 internal fun Context.getDefaultSmsPackage(): String? {
@@ -24,32 +26,42 @@ internal fun Context.getDefaultSmsPackage(): String? {
         val manager = getSystemService(RoleManager::class.java)
         if (manager.isRoleHeld(RoleManager.ROLE_SMS)) return packageName
     }
-    return Telephony.Sms.getDefaultSmsPackage(this)
+    return Sms.getDefaultSmsPackage(this)
 }
 
 class SmsReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Telephony.Sms.Intents.SMS_DELIVER_ACTION) {
+        if (intent.action != Sms.Intents.SMS_DELIVER_ACTION) {
             logInvalidBroadcast(intent, "SmsReceiver")
             return
         }
 
-        val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-        if (messages.isNullOrEmpty()) return
-
-        val sender = messages.first().sender(context)
-        logAndNotify(context, "SMS received from $sender")
-
-        val preferences = context.appPreferences()
-        val values = messages.toContentValues(context)
-
-        if (preferences.logReceipts) Log.w(TAG, values.toString())
-
-        if (preferences.storeReceivedSms) {
-            context.contentResolver.insert(Telephony.Sms.CONTENT_URI, values)
+        doAsync(onError = ::logReceivedSmsError) {
+            processReceivedSms(context, intent)
         }
     }
+}
+
+private fun logReceivedSmsError(e: Throwable) {
+    if (BuildConfig.DEBUG) Log.d(TAG, "Error processing received SMS", e)
+}
+
+private fun processReceivedSms(context: Context, intent: Intent) {
+    val preferences = context.appPreferences()
+    val log = preferences.logReceipts
+    val store = preferences.storeReceivedSms
+    if (!log && !store) return
+
+    val messages = Sms.Intents.getMessagesFromIntent(intent)
+    if (messages.isNullOrEmpty()) return
+
+    val sender = messages.first().sender(context)
+    logAndNotifyEvent(context, "SMS received from $sender")
+
+    val values = messages.toContentValues(context)
+    if (log) Log.w(TAG, values.toString())
+    if (store) context.contentResolver.insert(Sms.CONTENT_URI, values)
 }
 
 private fun SmsMessage.sender(context: Context): String {
@@ -64,32 +76,31 @@ private fun Array<SmsMessage>.toContentValues(context: Context): ContentValues =
     ContentValues().apply {
         val message = first()
         val address = message.displayOriginatingAddress
-        put(Telephony.Sms.ADDRESS, address)
-        put(Telephony.Sms.BODY, joinToString { it.displayMessageBody })
-        put(Telephony.Sms.DATE, System.currentTimeMillis())
-        put(Telephony.Sms.DATE_SENT, message.timestampMillis)
-        put(Telephony.Sms.PROTOCOL, message.protocolIdentifier)
-        put(Telephony.Sms.REPLY_PATH_PRESENT, message.isReplyPathPresent)
-        put(Telephony.Sms.SERVICE_CENTER, message.serviceCenterAddress)
+        put(Sms.ADDRESS, address)
+        put(Sms.BODY, joinToString { it.displayMessageBody })
+        put(Sms.DATE, System.currentTimeMillis())
+        put(Sms.DATE_SENT, message.timestampMillis)
+        put(Sms.PROTOCOL, message.protocolIdentifier)
+        put(Sms.REPLY_PATH_PRESENT, message.isReplyPathPresent)
+        put(Sms.SERVICE_CENTER, message.serviceCenterAddress)
         if (!message.pseudoSubject.isNullOrBlank()) {
-            put(Telephony.Sms.SUBJECT, message.pseudoSubject)
+            put(Sms.SUBJECT, message.pseudoSubject)
         }
-        val threadId = Telephony.Threads.getOrCreateThreadId(context, address)
-        put(Telephony.Sms.THREAD_ID, threadId)
-        put(Telephony.Sms.TYPE, Telephony.Sms.MESSAGE_TYPE_INBOX)
+        put(Sms.THREAD_ID, Threads.getOrCreateThreadId(context, address))
+        put(Sms.TYPE, Sms.MESSAGE_TYPE_INBOX)
     }
 
 class MmsReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Telephony.Sms.Intents.WAP_PUSH_RECEIVED_ACTION) {
+        if (intent.action != Sms.Intents.WAP_PUSH_RECEIVED_ACTION) {
             logInvalidBroadcast(intent, "MmsReceiver")
             return
         }
 
         // This is all we're doing for MMS, at least for now, because just
         // parsing the address from a message takes a stupid amount of work.
-        logAndNotify(context, "MMS received")
+        logAndNotifyEvent(context, "MMS received")
     }
 }
 
@@ -104,17 +115,17 @@ class ComposeSmsActivity : AppCompatActivity() {
 class HeadlessSmsSendService : Service() {
 
     override fun onCreate() =
-        logAndNotify(this, "HeadlessSmsSendService has been started")
+        logAndNotifyEvent(this, "HeadlessSmsSendService has been started")
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
 
 private fun logInvalidBroadcast(intent: Intent, receiver: String) {
-    if (BuildConfig.DEBUG) Log.w(TAG, "Invalid broadcast to $receiver: $intent")
+    if (BuildConfig.DEBUG) Log.d(TAG, "Invalid broadcast to $receiver: $intent")
 }
 
 // No DEBUG check here for logs 'cause they're important, and opt-in anyway.
-private fun logAndNotify(context: Context, event: String) {
+private fun logAndNotifyEvent(context: Context, event: String) {
     val preferences = context.appPreferences()
     val message = "$event while adbsms is the default SMS app"
     if (preferences.logReceipts) Log.w(TAG, message)

@@ -17,10 +17,6 @@ internal value class AppPreferences(private val sp: SharedPreferences) {
         get() = sp.getBoolean(SHOW_STATUS, true)
         set(value) = sp.edit().putBoolean(SHOW_STATUS, value).apply()
 
-    var checkCaller: Boolean
-        get() = sp.getBoolean(CHECK_CALLER, true)
-        set(value) = sp.edit().putBoolean(CHECK_CALLER, value).apply()
-
     var logReceipts: Boolean
         get() = sp.getBoolean(LOG_RECEIPTS, false)
         set(value) = sp.edit().putBoolean(LOG_RECEIPTS, value).apply()
@@ -46,7 +42,6 @@ internal value class AppPreferences(private val sp: SharedPreferences) {
 
 private const val HIDE_INTRO = "hide_intro"
 private const val SHOW_STATUS = "show_status"
-private const val CHECK_CALLER = "check_caller"
 private const val LOG_RECEIPTS = "log_receipts"
 private const val NOTIFY_RECEIPTS = "notify_receipts"
 private const val STORE_RECEIVED_SMS = "store_received_sms"

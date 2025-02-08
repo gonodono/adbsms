@@ -4,26 +4,19 @@
     <string name="caveat">This is <b><i>not</i></b> a functional SMS app.</string>
 
     <string name="header_intro">adbsms Intro</string>
-    <string name="text_intro">• Regular apps can\'t revoke permissions until API level 33, and even then it\'s cumbersome, so reverting the Read-only option here is handled manually through Settings, which should open directly upon selecting that option.\n\n• On API levels 29+, the default SMS app is also reverted manually. This is accomplished by re-setting the original from within the app itself, and it too should open directly.\n\n• In some cases, disabling the Full access option will leave the Read-only option enabled, even if you hadn\'t explicitly enabled that option beforehand.\n\n• The status notification, if enabled, will not update until this app resumes, should a launched operation have paused it.</string>
+    <string name="text_intro">• Regular apps can\'t revoke permissions until API level 33, and even then it\'s cumbersome, so reverting the Read-only option here is handled manually through Settings, which should open directly upon selecting that option.\n\n• On API levels 29+, the default SMS app is also reverted manually. This is accomplished by re-setting the original from within the app itself, and it too should open directly.\n\n• In some cases, disabling the Full access option will leave the Read-only option enabled, even if you hadn\'t explicitly enabled it option beforehand.\n\n• The status notification, if enabled, will not update until this app resumes, should a launched operation pause it.</string>
     <string name="label_hide_intro">Don\'t show again</string>
 
-    <string name="status_inactive"><b>Inactive</b></string>
-    <string name="status_read_enabled"><b>Read enabled!</b></string>
-    <string name="status_full_access"><b>Full access!!</b></string>
+    <string name="status_read_enabled"><b>Read-only mode enabled</b></string>
+    <string name="status_full_access"><b>adbsms is the default SMS app! Full access mode enabled.</b></string>
 
     <string name="refreshed">Refreshed</string>
 
     <string name="menu_refresh_ui">Refresh UI</string>
     <string name="menu_show_status">Status notifications</string>
-    <string name="menu_check_caller">Check calling process</string>
     <string name="menu_log_receipts">Log receipts</string>
     <string name="menu_notify_receipts">Notify receipts</string>
     <string name="menu_store_received_sms">Store rec\'d SMS</string>
-
-    <string name="title_check_disable"><b><font color="#FF0000">Caution!</font></b></string>
-    <string name="text_check_disable"><b>You are disabling a security measure!</b>\n\nThis should be disabled only if <i>absolutely necessary</i>. That is, only if this check is preventing authorized access.</string>
-    <string name="label_check_cancel">Cancel</string>
-    <string name="label_check_ok">I understand</string>
 
     <string name="label_read_info"><big><b>Read-only</b></big>\nUsing the <tt>READ_SMS</tt> permission</string>
     <string name="label_full_info"><big><b>Full access</b></big>\nUsing the default SMS app role\n\nCurrent default:</string>
@@ -31,12 +24,15 @@
     <string name="error_revert">Error. Revert manually.</string>
 
     <string name="label_enable">Enable</string>
-    <string name="label_revert">Revert</string>
+    <string name="label_revert"><b>Revert</b></string>
 
     <string name="desc_enable_read_only">Enable read-only</string>
     <string name="desc_revert_read_only">Revert read-only</string>
     <string name="desc_enable_full_access">Enable full access</string>
     <string name="desc_revert_full_access">Revert full access</string>
     <string name="desc_sms_app_options">SMS app options</string>
+
+    <string name="notification_title_status">adbsms is active</string>
+    <string name="notification_title_app">adbsms message event</string>
 
 </resources>

@@ -14,10 +14,4 @@
         android:title="@string/menu_show_status"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/option_check_caller"
-        android:checkable="true"
-        android:title="@string/menu_check_caller"
-        app:showAsAction="never" />
-
 </menu>

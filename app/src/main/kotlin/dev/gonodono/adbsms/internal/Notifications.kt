@@ -30,10 +30,14 @@ internal fun updateStatusNotification(context: Context) {
     ) {
         postStatusNotification(context, manager, isDefault)
     } else {
-        checkActivityIntent(context, STATUS_REQUEST_CODE_READ)?.cancel()
-        checkActivityIntent(context, STATUS_REQUEST_CODE_FULL)?.cancel()
         manager.cancel(STATUS_NOTIFICATION_ID)
+        cancelStatusActivityIntents(context)
     }
+}
+
+internal fun refreshStatusNotification(context: Context) {
+    cancelStatusActivityIntents(context)
+    updateStatusNotification(context)
 }
 
 private fun postStatusNotification(
@@ -65,6 +69,11 @@ private fun postStatusNotification(
         .setOngoing(true)
         .build()
     manager.notify(STATUS_NOTIFICATION_ID, notification)
+}
+
+private fun cancelStatusActivityIntents(context: Context) {
+    checkActivityIntent(context, STATUS_REQUEST_CODE_READ)?.cancel()
+    checkActivityIntent(context, STATUS_REQUEST_CODE_FULL)?.cancel()
 }
 
 private fun checkActivityIntent(
@@ -99,11 +108,8 @@ private fun createStatusDeleteIntent(context: Context): PendingIntent? =
 
 class StatusDeleteReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        checkActivityIntent(context, STATUS_REQUEST_CODE_READ)?.cancel()
-        checkActivityIntent(context, STATUS_REQUEST_CODE_FULL)?.cancel()
-        updateStatusNotification(context)
-    }
+    override fun onReceive(context: Context, intent: Intent) =
+        refreshStatusNotification(context)
 }
 
 private fun NotificationManager.ensureChannel(id: String, name: String) {

@@ -29,6 +29,7 @@ import dev.gonodono.adbsms.internal.checkShowIntro
 import dev.gonodono.adbsms.internal.hasPostNotificationsPermission
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 import dev.gonodono.adbsms.internal.openAppSettings
+import dev.gonodono.adbsms.internal.refreshStatusNotification
 import dev.gonodono.adbsms.internal.updateStatusNotification
 
 class MainActivity : AppCompatActivity() {
@@ -149,8 +150,9 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             // In case things get stuck due to bad timing with a launched op.
             R.id.option_refresh_ui -> {
-                Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
                 updateUi()
+                refreshStatusNotification(this)
+                Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
             }
             R.id.option_show_status -> {
                 preferences.showStatus = !preferences.showStatus

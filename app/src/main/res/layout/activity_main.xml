@@ -22,9 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingMultiplier="1.3"
-                android:text="@string/label_read_info"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="18sp" />
+                android:text="@string/label_read_info" />
 
             <dev.gonodono.adbsms.internal.ButtonSwitch
                 android:id="@+id/read_switch"
@@ -33,8 +31,7 @@
                 android:layout_below="@id/read_info"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/spacing"
-                android:contentDescription="@string/desc_enable_read_only"
-                android:textSize="18sp" />
+                android:contentDescription="@string/desc_enable_read_only" />
 
         </RelativeLayout>
 
@@ -50,9 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingMultiplier="1.3"
-                android:text="@string/label_full_info"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="18sp" />
+                android:text="@string/label_full_info" />
 
             <ImageButton
                 android:id="@+id/sms_app_options"
@@ -72,8 +67,7 @@
                 android:layout_below="@id/full_info"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/spacing"
-                android:contentDescription="@string/desc_enable_full_access"
-                android:textSize="18sp" />
+                android:contentDescription="@string/desc_enable_full_access" />
 
         </RelativeLayout>
 

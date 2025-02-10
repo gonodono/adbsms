@@ -18,10 +18,10 @@
     <!-- <uses-permission android:name="android.permission.WRITE_SMS" /> -->
 
 
-    <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage(). -->
-    <!-- The <queries> entry seems sufficient for API levels 30..33, but later versions -->
-    <!-- apparently require the QUERY_ALL_PACKAGES permission. I'm not sure why, though, -->
-    <!-- as I can't find any mention of relevant behavior changes. -->
+    <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage() -->
+    <!-- on API levels >= 30. The <queries> entry seems sufficient for 30..33, but -->
+    <!-- later versions apparently require the QUERY_ALL_PACKAGES permission. I'm not -->
+    <!-- sure why, though, as I can't find any mention of relevant behavior changes. -->
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
@@ -37,10 +37,8 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.DayNight"
-        tools:targetApi="31">
+        android:theme="@style/Theme.adbsms">
 
         <activity
             android:name=".MainActivity"

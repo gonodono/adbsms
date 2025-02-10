@@ -4,25 +4,23 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.SwitchCompat
 import dev.gonodono.adbsms.R
-import kotlin.math.roundToInt
 
 class ButtonSwitch @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
-) : SwitchCompat(context, attrs) {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = R.attr.buttonSwitchStyle
+) : SwitchCompat(context, attrs, defStyleAttr) {
 
     init {
-        minHeight = (48 * resources.displayMetrics.density).roundToInt()
-        switchPadding = (10 * resources.displayMetrics.density).roundToInt()
-        val textColor = resources.getColorStateList(
-            R.color.button_switch_text,
-            context.theme
-        )
-        setTextColor(textColor)
+        super.setShowText(false)
+        text = if (isChecked) textOn else textOff
     }
 
+    override fun setShowText(showText: Boolean) {}
+
     override fun setChecked(checked: Boolean) {
-        setText(if (checked) R.string.label_revert else R.string.label_enable)
+        if (isChecked == checked) return
+        text = if (checked) textOn else textOff
         super.setChecked(checked)
     }
 

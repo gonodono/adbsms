@@ -35,6 +35,19 @@ import kotlin.coroutines.CoroutineContext
 
 internal const val TAG = "adbsms"
 
+internal fun View.applyInsetsListener() {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        v.updateLayoutParams<MarginLayoutParams> {
+            leftMargin = bars.left
+            topMargin = bars.top
+            rightMargin = bars.right
+            bottomMargin = bars.bottom
+        }
+        insets
+    }
+}
+
 internal fun Activity.checkShowIntro(
     savedInstanceState: Bundle?,
     onFinished: () -> Unit
@@ -51,19 +64,6 @@ internal fun Activity.checkShowIntro(
             }
     } else {
         onFinished()
-    }
-}
-
-internal fun View.applyInsetsListener() {
-    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-        val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-        v.updateLayoutParams<MarginLayoutParams> {
-            leftMargin = bars.left
-            topMargin = bars.top
-            rightMargin = bars.right
-            bottomMargin = bars.bottom
-        }
-        insets
     }
 }
 

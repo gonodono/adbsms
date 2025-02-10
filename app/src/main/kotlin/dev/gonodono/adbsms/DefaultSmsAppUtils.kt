@@ -15,7 +15,6 @@ import android.telephony.PhoneNumberUtils
 import android.telephony.SmsMessage
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.isDigitsOnly
 import dev.gonodono.adbsms.internal.TAG
 import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.doAsync
@@ -57,7 +56,7 @@ private fun processReceivedSms(context: Context, intent: Intent) {
     if (messages.isNullOrEmpty()) return
 
     val sender = messages.first().sender(context)
-    logAndNotifyEvent(context, "SMS received from $sender")
+    notifyMessageEvent(context, context.getString(R.string.event_sms, sender))
 
     val values = messages.toContentValues(context)
     if (log) Log.w(TAG, values.toString())
@@ -65,10 +64,11 @@ private fun processReceivedSms(context: Context, intent: Intent) {
 }
 
 private fun SmsMessage.sender(context: Context): String {
-    val address = displayOriginatingAddress ?: return "Unknown"
+    val address = displayOriginatingAddress
+    address ?: return context.getString(R.string.unknown)
     if (address.contains("@")) return address  // Naive email check
     val country = context.resources.configuration.locales[0].country
-    val code = if (country.isDigitsOnly()) "US" else country
+    val code = if (country.any { it.isDigit() }) "US" else country
     return PhoneNumberUtils.formatNumber(address, code) ?: address
 }
 
@@ -83,9 +83,7 @@ private fun Array<SmsMessage>.toContentValues(context: Context): ContentValues =
         put(Sms.PROTOCOL, message.protocolIdentifier)
         put(Sms.REPLY_PATH_PRESENT, message.isReplyPathPresent)
         put(Sms.SERVICE_CENTER, message.serviceCenterAddress)
-        if (!message.pseudoSubject.isNullOrBlank()) {
-            put(Sms.SUBJECT, message.pseudoSubject)
-        }
+        put(Sms.SUBJECT, message.pseudoSubject.takeIf { it.isNotBlank() })
         put(Sms.THREAD_ID, Threads.getOrCreateThreadId(context, address))
         put(Sms.TYPE, Sms.MESSAGE_TYPE_INBOX)
     }
@@ -100,7 +98,7 @@ class MmsReceiver : BroadcastReceiver() {
 
         // This is all we're doing for MMS, at least for now, because just
         // parsing the address from a message takes a stupid amount of work.
-        logAndNotifyEvent(context, "MMS received")
+        notifyMessageEvent(context, context.getString(R.string.event_mms))
     }
 }
 
@@ -115,7 +113,7 @@ class ComposeSmsActivity : AppCompatActivity() {
 class HeadlessSmsSendService : Service() {
 
     override fun onCreate() =
-        logAndNotifyEvent(this, "HeadlessSmsSendService has been started")
+        notifyMessageEvent(this, getString(R.string.event_respond))
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
@@ -124,10 +122,10 @@ private fun logInvalidBroadcast(intent: Intent, receiver: String) {
     if (BuildConfig.DEBUG) Log.d(TAG, "Invalid broadcast to $receiver: $intent")
 }
 
-// No DEBUG check here for logs 'cause they're important, and opt-in anyway.
-private fun logAndNotifyEvent(context: Context, event: String) {
+// No DEBUG check here for logs because they're info for the user, and opt-in.
+private fun notifyMessageEvent(context: Context, event: String) {
     val preferences = context.appPreferences()
-    val message = "$event while adbsms is the default SMS app"
+    val message = context.getString(R.string.message_event, event)
     if (preferences.logReceipts) Log.w(TAG, message)
     if (preferences.notifyReceipts) postSmsAppNotification(context, message)
 }

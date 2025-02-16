@@ -2,6 +2,7 @@ package dev.gonodono.adbsms
 
 import android.app.Service
 import android.app.role.RoleManager
+import android.app.role.RoleManager.ROLE_SMS
 import android.content.BroadcastReceiver
 import android.content.ContentValues
 import android.content.Context
@@ -23,7 +24,7 @@ import dev.gonodono.adbsms.internal.postSmsAppNotification
 internal fun Context.getDefaultSmsPackage(): String? {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val manager = getSystemService(RoleManager::class.java)
-        if (manager.isRoleHeld(RoleManager.ROLE_SMS)) return packageName
+        if (manager.isRoleHeld(ROLE_SMS)) return packageName
     }
     return Sms.getDefaultSmsPackage(this)
 }
@@ -102,6 +103,10 @@ class MmsReceiver : BroadcastReceiver() {
     }
 }
 
+private fun logInvalidBroadcast(intent: Intent, receiver: String) {
+    if (BuildConfig.DEBUG) Log.d(TAG, "Invalid broadcast to $receiver: $intent")
+}
+
 class ComposeSmsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,10 +121,6 @@ class HeadlessSmsSendService : Service() {
         notifyMessageEvent(this, getString(R.string.event_respond))
 
     override fun onBind(intent: Intent?): IBinder? = null
-}
-
-private fun logInvalidBroadcast(intent: Intent, receiver: String) {
-    if (BuildConfig.DEBUG) Log.d(TAG, "Invalid broadcast to $receiver: $intent")
 }
 
 // No DEBUG check here for logs because they're info for the user, and opt-in.

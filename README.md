@@ -37,9 +37,9 @@ adb by replacing the authority in any `content://sms` URI with `adbsms`.
 
 ### Examples
 
-You'll have to check adb's documentation for details on the rest of its
-available options, but these few examples should at least clarify the URI
-modification necessary to access this app's Provider.
+You'll have to check adb's documentation for details on all of its available
+options, but these few examples should at least clarify the URI modification
+necessary to access this app's Provider.
 
 To list the number and text for all (viewable) messages:
 

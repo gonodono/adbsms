@@ -55,10 +55,10 @@ internal fun Activity.checkShowIntro(
     if (savedInstanceState == null && !appPreferences().hideIntro) {
         AlertDialog.Builder(this)
             .setView(R.layout.dialog_intro)
-            .setPositiveButton("Close", null)
+            .setPositiveButton(R.string.label_close, null)
             .setOnDismissListener { onFinished() }
             .show()
-            .findViewById<CheckBox>(R.id.hide_welcome)
+            .findViewById<CheckBox>(R.id.hide_intro)
             ?.setOnCheckedChangeListener { _, isChecked ->
                 appPreferences().hideIntro = isChecked
             }

@@ -7,8 +7,8 @@ bridge without causing `SecurityException`s due to missing permissions.
 <br />
 
 <p align="center">
-<img src="images/screenshots.png"
-alt="Screenshots of the app in light and dark modes."
+<img src="images/screenshots.png" 
+alt="Screenshots of the app in light and dark modes." 
 width="30%" />
 </p>
 
@@ -18,12 +18,12 @@ width="30%" />
 
 The app offers two levels of access to the SMS Provider:
 
-+ Read-only, by acquiring the `READ_SMS` permission.
++ Read-only, by acquiring the `READ_SMS` permission
 
   This option is the most straightforward of the two. However, on Marshmallow
   and above, you will be able to view only `inbox` and `sent` messages.
 
-+ Full access, by temporarily assuming the default SMS app role.
++ Full access, by temporarily assuming the default SMS app role
 
   This one will grant you full read and write access on each applicable version,
   but your messaging will be largely nonfunctional while adbsms is the default.
@@ -33,7 +33,8 @@ The app offers two levels of access to the SMS Provider:
   anything out.
 
 After enabling the desired option, queries can be made as they usually are over
-adb by replacing the authority in any `content://sms` URI with `adbsms`.
+adb by replacing the authority in any `content://sms` URI with `adbsms`. (The
+app's UI can be closed at this point; it's not involved in Provider operations.)
 
 ### Examples
 
@@ -97,6 +98,24 @@ given in the following table.
 
 ## Notes
 
++ New versions will now be accompanied by [a GitHub release][releases] with
+  assets that contain an `apk` of a release build variant signed with a debug
+  key, which is the current setup in the module's `build.gradle.kts`. This app
+  isn't published anywhere, as it's intended to be sort of a homebrew tool for
+  developers and power users, and the unusual configuration is used to apply
+  ProGuard and whatnot to an "unsigned" build.
+
+  I'm not encouraging anyone to prefer the pre-built APKs; they're simply a
+  convenience for users who don't have the setup available to do it themselves,
+  or who just want a quick test. They're assembled using GitHub Actions and
+  [this local workflow][workflow], so you can be reasonably certain that there
+  are no malicious injections or modifications.
+
+  The GitHub releases for automated builds will be created by user
+  `github-actions`, whose name links to https://github.com/apps/github-actions,
+  which actually redirects elsewhere if followed. Workflow execution details can
+  be found on [the Actions tab][actions].
+
 + All Provider operation requests are now guarded by a check against the calling 
   process to ensure that they're coming from the adb daemon. The Caution alert
   formerly found in this README's intro no longer applies.   
@@ -116,7 +135,39 @@ given in the following table.
   I _think_ that should be sufficient for everything that adb can do, but if you
   find something I've missed, please [file an issue][issue] for it.
 
+<br />
+
+## License
+
+MIT License
+
+Copyright (c) 2025 Mike M.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
 [columns]: https://developer.android.com/reference/android/provider/Telephony.TextBasedSmsColumns
+
+[releases]: https://github.com/gonodono/adbsms/releases
+
+[workflow]: .github/workflows/build_and_release_apk.yaml
+
+[actions]: https://github.com/gonodono/adbsms/actions
 
 [provider]: app/src/main/kotlin/dev/gonodono/adbsms/AdbSmsProvider.kt
 

@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony.Sms
-import android.text.Spanned
+import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
 import android.view.MenuItem
@@ -84,11 +84,8 @@ class MainActivity : AppCompatActivity() {
 
         ui.fullInfo.text = buildSpannedString {
             appendLine(getText(R.string.label_full_info))
-            append(
-                default.toString(),
-                RelativeSizeSpan(0.9F),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            val shrinkSpan = RelativeSizeSpan(0.9F)
+            append(default.toString(), shrinkSpan, SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         ui.fullSwitch.apply {
             if (isDefault) {
@@ -189,20 +186,23 @@ class MainActivity : AppCompatActivity() {
     private fun revertDefaultSmsApp() {
         val original = appPreferences().originalDefault
         when {
-            original == null -> {
-                Toast.makeText(this, R.string.error_revert, LENGTH_SHORT).show()
-            }
+            original == null -> showRevertError()
+
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
                 val intent = packageManager.getLaunchIntentForPackage(original)
-                if (intent != null) launchForUpdate(intent)
+                if (intent != null) launchForUpdate(intent) else showRevertError()
             }
+
             else -> changeDefaultSmsAppOldMethod(original)
         }
     }
 
     private fun changeDefaultSmsAppOldMethod(packageName: String) {
         val intent = Intent(Sms.Intents.ACTION_CHANGE_DEFAULT)
-            .putExtra(Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+        intent.putExtra(Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
         launchForUpdate(intent)
     }
+
+    private fun showRevertError() =
+        Toast.makeText(this, R.string.error_revert, LENGTH_SHORT).show()
 }

@@ -1,0 +1,39 @@
+name: Build and release APK
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Rename file
+        run: |
+          cd app/build/outputs/apk/release
+          mv app-release.apk adbsms.apk
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/adbsms.apk
+          body: Automated build. Refer to the README Notes for details.

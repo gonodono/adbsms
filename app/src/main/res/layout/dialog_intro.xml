@@ -39,7 +39,7 @@
     </ScrollView>
 
     <CheckBox
-        android:id="@+id/hide_welcome"
+        android:id="@+id/hide_intro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"

@@ -32,8 +32,15 @@ jobs:
           cd app/build/outputs/apk/release
           mv app-release.apk adbsms.apk
 
+      - name: Generate checksum
+        run: |
+          cd app/build/outputs/apk/release
+          sha256sum adbsms.apk >> checksum.txt
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: app/build/outputs/apk/release/adbsms.apk
+          files: |
+            app/build/outputs/apk/release/adbsms.apk
+            app/build/outputs/apk/release/checksum.txt
           body: Automated build. Refer to the README Notes for details.

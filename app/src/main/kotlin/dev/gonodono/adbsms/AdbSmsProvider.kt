@@ -6,7 +6,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import android.os.Binder
-import androidx.core.content.ContentProviderCompat
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 
 class AdbSmsProvider : ContentProvider() {
@@ -75,7 +74,7 @@ class AdbSmsProvider : ContentProvider() {
 }
 
 private inline val ContentProvider.contentResolver: ContentResolver
-    get() = ContentProviderCompat.requireContext(this).contentResolver
+    get() = checkNotNull(context) { "Context not found" }.contentResolver
 
 private fun Uri.toSmsUri(): Uri =
     Uri.Builder()

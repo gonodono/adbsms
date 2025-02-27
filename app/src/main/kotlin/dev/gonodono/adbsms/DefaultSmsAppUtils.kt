@@ -1,5 +1,6 @@
 package dev.gonodono.adbsms
 
+import android.app.Activity
 import android.app.Service
 import android.app.role.RoleManager
 import android.app.role.RoleManager.ROLE_SMS
@@ -15,7 +16,6 @@ import android.provider.Telephony.Threads
 import android.telephony.PhoneNumberUtils
 import android.telephony.SmsMessage
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import dev.gonodono.adbsms.internal.TAG
 import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.doAsync
@@ -107,7 +107,7 @@ private fun logInvalidBroadcast(intent: Intent, receiver: String) {
     if (BuildConfig.DEBUG) Log.d(TAG, "Invalid broadcast to $receiver: $intent")
 }
 
-class ComposeSmsActivity : AppCompatActivity() {
+class ComposeSmsActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

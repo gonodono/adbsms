@@ -18,12 +18,12 @@ width="30%" />
 
 The app offers two levels of access to the SMS Provider:
 
-+ Read-only, by acquiring the `READ_SMS` permission
++ **Read-only**, by acquiring the `READ_SMS` permission
 
   This option is the most straightforward of the two. However, on Marshmallow
   and above, you will be able to view only `inbox` and `sent` messages.
 
-+ Full access, by temporarily assuming the default SMS app role
++ **Full access**, by temporarily assuming the default SMS app role
 
   This one will grant you full read and write access on each applicable version,
   but your messaging will be largely nonfunctional while adbsms is the default.
@@ -120,15 +120,15 @@ given in the following table.
   process to ensure that they're coming from the adb daemon. The Caution alert
   formerly found in this README's intro no longer applies.   
 
-+ If you plan to use the Full access option in order to get at the hidden
++ If you plan to use the **Full access** option in order to get at the hidden
   message types, you should know that not all SMS apps utilize each one. Though
   most use `inbox` and `sent` consistently, it seems that many apps simply don't
   use `draft` and/or the others at all. I'm guessing that they save those
   messages to internal storage instead, for some reason. Just a heads up.
 
-+ If you need to use the Full access option on Lollipop, API levels 21 and 22,
-  you will need to un-comment the `WRITE_SMS` permission in the manifest (and
-  probably suppress a warning or two, as well).
++ If you plan to use the **Full access** option on Lollipop, API levels 21 and
+  22, you will need to un-comment the `WRITE_SMS` permission in the manifest
+  (and probably suppress a warning or two, as well).
 
 + I haven't implemented every possible `ContentProvider` operation in
   [`AdbSmsProvider`][provider], but it does cover all of the required overrides.

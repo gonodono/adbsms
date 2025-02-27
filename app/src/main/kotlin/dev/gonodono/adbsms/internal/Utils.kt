@@ -3,6 +3,7 @@ package dev.gonodono.adbsms.internal
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_SMS
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -15,30 +16,23 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowInsets
 import android.widget.CheckBox
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import dev.gonodono.adbsms.BuildConfig
 import dev.gonodono.adbsms.R
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
+import java.util.concurrent.Executors
 
 internal const val TAG = "adbsms"
 
 internal fun View.applyInsetsListener() {
-    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-        val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-        v.updateLayoutParams<MarginLayoutParams> {
+    if (Build.VERSION.SDK_INT < 35) return
+
+    setOnApplyWindowInsetsListener { v, insets ->
+        val bars = insets.getInsets(WindowInsets.Type.systemBars())
+        (v.layoutParams as? MarginLayoutParams)?.apply {
             leftMargin = bars.left
             topMargin = bars.top
             rightMargin = bars.right
@@ -90,24 +84,18 @@ internal fun Context.hasReadSmsPermission(): Boolean =
     checkSelfPermission(READ_SMS) == PERMISSION_GRANTED
 
 internal fun BroadcastReceiver.doAsync(
-    coroutineContext: CoroutineContext = Dispatchers.Default,
-    onError: (Throwable) -> Unit = {},
-    block: suspend CoroutineScope.() -> Unit
+    onError: ((Throwable) -> Unit)? = null,
+    block: () -> Unit
 ) {
+    val executor = Executors.newSingleThreadExecutor()
     val pendingResult = goAsync()
-    val scope = CoroutineScope(coroutineContext)
-    scope.launch {
+    executor.submit {
         try {
-            try {
-                coroutineScope(block)
-            } catch (e: CancellationException) {
-                // No rethrow. scope is cancelled anyway.
-            } catch (e: Throwable) {
-                onError(e)
-            } finally {
-                scope.cancel()
-            }
+            block()
+        } catch (e: Throwable) {
+            onError?.invoke(e)
         } finally {
+            executor.shutdown()
             pendingResult.finish()
         }
     }

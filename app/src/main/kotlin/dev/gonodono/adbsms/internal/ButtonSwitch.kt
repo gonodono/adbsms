@@ -2,14 +2,14 @@ package dev.gonodono.adbsms.internal
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.appcompat.widget.SwitchCompat
+import android.widget.Switch
 import dev.gonodono.adbsms.R
 
 class ButtonSwitch @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.buttonSwitchStyle
-) : SwitchCompat(context, attrs, defStyleAttr) {
+) : Switch(context, attrs, defStyleAttr) {
 
     init {
         super.setShowText(false)

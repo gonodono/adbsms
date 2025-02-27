@@ -37,10 +37,17 @@ jobs:
           cd app/build/outputs/apk/release
           sha256sum adbsms.apk >> checksum.txt
 
+      - name: Generate short hash
+        id: short-hash
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             app/build/outputs/apk/release/adbsms.apk
             app/build/outputs/apk/release/checksum.txt
-          body: Automated build. Refer to the README Notes for details.
+          body: |
+            Automated build: Commit ${{ steps.short-hash.outputs.hash }}
+            
+            ${{ github.event.head_commit.message }}

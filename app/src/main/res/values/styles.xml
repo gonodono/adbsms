@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Widget.adbsms.ButtonSwitch" parent="Widget.AppCompat.CompoundButton.Switch">
+    <style name="Widget.adbsms.ButtonSwitch" parent="android:Widget.Material.CompoundButton.Switch">
         <item name="android:minWidth">48dp</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/button_switch_text</item>
         <item name="android:textOff">@string/label_enable</item>
         <item name="android:textOn">@string/label_revert</item>
-        <item name="switchPadding">10dp</item>
+        <item name="android:switchPadding">10dp</item>
     </style>
 
-    <style name="Widget.adbsms.TextView" parent="Widget.AppCompat.TextView">
+    <style name="Widget.adbsms.TextView" parent="android:Widget.Material.TextView">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>

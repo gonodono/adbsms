@@ -11,8 +11,8 @@ android {
         applicationId = "dev.gonodono.adbsms"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "0.0.7"
+        versionCode = 8
+        versionName = "0.0.8"
     }
     buildFeatures {
         buildConfig = true
@@ -33,10 +33,4 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-}
-
-dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.activity)
 }

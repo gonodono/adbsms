@@ -1,5 +1,6 @@
 package dev.gonodono.adbsms.internal
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
@@ -10,7 +11,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.core.app.NotificationCompat
 import dev.gonodono.adbsms.MainActivity
 import dev.gonodono.adbsms.R
 import dev.gonodono.adbsms.getDefaultSmsPackage
@@ -60,7 +60,7 @@ private fun postStatusNotification(
     val textId =
         if (isDefault) R.string.status_full_access
         else R.string.status_read_enabled
-    val notification = NotificationCompat.Builder(context, STATUS_CHANNEL_ID)
+    val notification = createNotificationBuilder(context, STATUS_CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(context.getText(R.string.notification_title_status))
         .setContentText(context.getText(textId))
@@ -90,32 +90,21 @@ private fun getActivityIntent(
     context: Context,
     requestCode: Int,
     extraFlags: Int
-): PendingIntent? =
-    PendingIntent.getActivity(
-        context,
-        requestCode,
-        Intent(context, MainActivity::class.java),
-        FLAG_IMMUTABLE or extraFlags
-    )
+): PendingIntent? {
+    val intent = Intent(context, MainActivity::class.java)
+    val flags = FLAG_IMMUTABLE or extraFlags
+    return PendingIntent.getActivity(context, requestCode, intent, flags)
+}
 
-private fun createStatusDeleteIntent(context: Context): PendingIntent? =
-    PendingIntent.getBroadcast(
-        context,
-        0,
-        Intent(context, StatusDeleteReceiver::class.java),
-        FLAG_IMMUTABLE
-    )
+private fun createStatusDeleteIntent(context: Context): PendingIntent? {
+    val intent = Intent(context, StatusDeleteReceiver::class.java)
+    return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE)
+}
 
 class StatusDeleteReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) =
         refreshStatusNotification(context)
-}
-
-private fun NotificationManager.ensureChannel(id: String, name: String) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-    if (getNotificationChannel(id) != null) return
-    createNotificationChannel(NotificationChannel(id, name, IMPORTANCE_HIGH))
 }
 
 const val SMS_APP_CHANNEL_ID = "sms_app_alerts"
@@ -126,7 +115,7 @@ internal fun postSmsAppNotification(context: Context, text: CharSequence) {
     val manager = context.getSystemService(NotificationManager::class.java)
     manager.ensureChannel(SMS_APP_CHANNEL_ID, SMS_APP_CHANNEL_NAME)
 
-    val notification = NotificationCompat.Builder(context, SMS_APP_CHANNEL_ID)
+    val notification = createNotificationBuilder(context, SMS_APP_CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(context.getText(R.string.notification_title_app))
         .setContentText(text)
@@ -136,3 +125,16 @@ internal fun postSmsAppNotification(context: Context, text: CharSequence) {
     val id = context.appPreferences().nextSmsAppNotificationId()
     manager.notify(id, notification)
 }
+
+private fun NotificationManager.ensureChannel(id: String, name: String) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+    if (getNotificationChannel(id) != null) return
+    createNotificationChannel(NotificationChannel(id, name, IMPORTANCE_HIGH))
+}
+
+private fun createNotificationBuilder(context: Context, channelId: String) =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Notification.Builder(context, channelId)
+    } else {
+        @Suppress("DEPRECATION") Notification.Builder(context)
+    }

@@ -2,25 +2,22 @@ package dev.gonodono.adbsms
 
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_SMS
+import android.app.Activity
 import android.app.role.RoleManager
 import android.app.role.RoleManager.ROLE_SMS
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony.Sms
+import android.text.SpannableStringBuilder
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.PopupMenu
-import androidx.core.text.buildSpannedString
 import dev.gonodono.adbsms.databinding.ActivityMainBinding
 import dev.gonodono.adbsms.internal.appPreferences
 import dev.gonodono.adbsms.internal.applyInsetsListener
@@ -32,17 +29,13 @@ import dev.gonodono.adbsms.internal.openAppSettings
 import dev.gonodono.adbsms.internal.refreshStatusNotification
 import dev.gonodono.adbsms.internal.updateStatusNotification
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     private lateinit var ui: ActivityMainBinding
-
-    private val requestPermission: (String) -> Unit =
-        registerForActivityResult(RequestPermission()) { updateUi() }::launch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enableEdgeToEdge()
         ui = ActivityMainBinding.inflate(layoutInflater)
         ui.root.applyInsetsListener()
         setContentView(ui.root)
@@ -82,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             isChecked = hasRead
         }
 
-        ui.fullInfo.text = buildSpannedString {
+        ui.fullInfo.text = SpannableStringBuilder().apply {
             appendLine(getText(R.string.label_full_info))
             val shrinkSpan = RelativeSizeSpan(0.9F)
             append(default.toString(), shrinkSpan, SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -103,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSmsAppOptions(anchor: View) = PopupMenu(this, anchor).run {
-        inflate(R.menu.sms_app_options)
+        inflate(R.menu.options_sms_app)
         setOnMenuItemClickListener(::onOptionsItemSelected)
 
         val preferences = appPreferences()
@@ -124,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu ?: return false
-        menuInflater.inflate(R.menu.options, menu)
+        menuInflater.inflate(R.menu.options_main, menu)
         return true
     }
 
@@ -168,9 +161,6 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private val launchForUpdate: (Intent) -> Unit =
-        registerForActivityResult(StartActivityForResult()) { updateUi() }::launch
-
     private fun setSelfAsDefaultSmsApp() {
         appPreferences().originalDefault = getDefaultSmsPackage()
 
@@ -205,4 +195,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun showRevertError() =
         Toast.makeText(this, R.string.error_revert, LENGTH_SHORT).show()
+
+    private fun requestPermission(permission: String) =
+        requestPermissions(arrayOf(permission), 0)
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) = updateUi()
+
+    private fun launchForUpdate(intent: Intent) =
+        startActivityForResult(intent, 0)
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) = updateUi()
 }

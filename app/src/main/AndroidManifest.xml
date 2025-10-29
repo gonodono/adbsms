@@ -7,25 +7,42 @@
         android:required="true"
         tools:ignore="UnnecessaryRequiredFeature" />
 
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- All of these except RECEIVE_MMS are required for getDefaultSmsPackage() -->
+    <!-- to work correctly on newer Android versions. If you're missing any, that -->
+    <!-- method may return null while your app is the default SMS app, even though the -->
+    <!-- app will still function as the default. What a mess Android's SMS has become! -->
+    <!-- The system's list of these is in com.android.internal.telephony.SmsApplication. -->
 
-    <!-- Required for the default SMS app functionality. -->
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+    <uses-permission
+        android:name="android.permission.READ_SMS"
+        tools:ignore="SmsAndCallLogPolicy" />
+    <uses-permission
+        android:name="android.permission.WRITE_SMS"
+        tools:ignore="SmsAndCallLogPolicy,SystemPermissionTypo" />
+    <uses-permission
+        android:name="android.permission.RECEIVE_SMS"
+        tools:ignore="SmsAndCallLogPolicy" />
+    <uses-permission
+        android:name="android.permission.RECEIVE_WAP_PUSH"
+        tools:ignore="SmsAndCallLogPolicy" />
+    <uses-permission
+        android:name="android.permission.SEND_SMS"
+        tools:ignore="SmsAndCallLogPolicy" />
+    <uses-permission
+        android:name="android.permission.READ_CELL_BROADCASTS"
+        tools:ignore="SmsAndCallLogPolicy" />
+    <uses-permission
+        android:name="android.permission.RECEIVE_MMS"
+        tools:ignore="SmsAndCallLogPolicy" />
 
-    <!-- Required for write ops on Lollipop 21 and 22, if supporting those. -->
-    <!-- <uses-permission android:name="android.permission.WRITE_SMS" /> -->
 
-
-    <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage() -->
-    <!-- on API levels >= 30. The <queries> entry seems sufficient for 30..33, but -->
-    <!-- later versions apparently require the QUERY_ALL_PACKAGES permission. I'm not -->
-    <!-- sure why, though, as I can't find any mention of relevant behavior changes. -->
+    <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage() on API -->
+    <!-- levels >= 30. The <queries> entry seems sufficient for 30..33, but later versions -->
+    <!-- apparently require the QUERY_ALL_PACKAGES permission. This really seems like a bug. -->
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+        tools:ignore="PackageVisibilityPolicy,QueryAllPackagesPermission" />
 
     <!-- <queries> -->
     <!--     <intent> -->
@@ -33,6 +50,8 @@
     <!--     </intent> -->
     <!-- </queries> -->
 
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -61,7 +80,7 @@
         <!-- Default SMS app components -->
 
         <receiver
-            android:name=".SmsReceiver"
+            android:name=".internal.SmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
@@ -70,7 +89,7 @@
         </receiver>
 
         <receiver
-            android:name=".MmsReceiver"
+            android:name=".internal.MmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>
@@ -80,15 +99,13 @@
         </receiver>
 
         <activity
-            android:name=".ComposeSmsActivity"
+            android:name=".internal.ComposeSmsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
@@ -97,13 +114,12 @@
         </activity>
 
         <service
-            android:name=".HeadlessSmsSendService"
+            android:name=".internal.HeadlessSmsSendService"
             android:exported="true"
             android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
             <intent-filter>
                 <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />

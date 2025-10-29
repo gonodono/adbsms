@@ -11,9 +11,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Telephony.Sms.getDefaultSmsPackage
 import dev.gonodono.adbsms.MainActivity
 import dev.gonodono.adbsms.R
-import dev.gonodono.adbsms.getDefaultSmsPackage
 
 const val STATUS_CHANNEL_ID = "status_alerts"
 const val STATUS_CHANNEL_NAME = "Status alerts"
@@ -22,7 +22,7 @@ const val STATUS_REQUEST_CODE_FULL = 1
 const val STATUS_NOTIFICATION_ID = 0
 
 internal fun updateStatusNotification(context: Context) {
-    val isDefault = context.packageName == context.getDefaultSmsPackage()
+    val isDefault = context.packageName == getDefaultSmsPackage(context)
     val manager = context.getSystemService(NotificationManager::class.java)
 
     if (context.appPreferences().showStatus &&
@@ -45,6 +45,8 @@ private fun postStatusNotification(
     manager: NotificationManager,
     isDefault: Boolean
 ) {
+    if (!context.canPostNotifications()) return
+
     val requestCode =
         if (isDefault) STATUS_REQUEST_CODE_FULL
         else STATUS_REQUEST_CODE_READ
@@ -79,12 +81,14 @@ private fun cancelStatusActivityIntents(context: Context) {
 private fun checkActivityIntent(
     context: Context,
     requestCode: Int
-): PendingIntent? = getActivityIntent(context, requestCode, FLAG_NO_CREATE)
+): PendingIntent? =
+    getActivityIntent(context, requestCode, FLAG_NO_CREATE)
 
 private fun createActivityIntent(
     context: Context,
     requestCode: Int
-): PendingIntent? = getActivityIntent(context, requestCode, 0)
+): PendingIntent? =
+    getActivityIntent(context, requestCode, 0)
 
 private fun getActivityIntent(
     context: Context,
@@ -127,13 +131,12 @@ internal fun postSmsAppNotification(context: Context, text: CharSequence) {
 }
 
 private fun NotificationManager.ensureChannel(id: String, name: String) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-    if (getNotificationChannel(id) != null) return
+    if (Build.VERSION.SDK_INT < 26 || getNotificationChannel(id) != null) return
     createNotificationChannel(NotificationChannel(id, name, IMPORTANCE_HIGH))
 }
 
 private fun createNotificationBuilder(context: Context, channelId: String) =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    if (Build.VERSION.SDK_INT >= 26) {
         Notification.Builder(context, channelId)
     } else {
         @Suppress("DEPRECATION") Notification.Builder(context)

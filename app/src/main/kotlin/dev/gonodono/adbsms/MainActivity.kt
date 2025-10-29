@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony.Sms
+import android.provider.Telephony.Sms.getDefaultSmsPackage
 import android.text.SpannableStringBuilder
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.style.RelativeSizeSpan
@@ -46,7 +47,7 @@ class MainActivity : Activity() {
     }
 
     private fun checkPostNotificationsPermission() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        if (Build.VERSION.SDK_INT < 33) return
         if (hasPostNotificationsPermission()) return
         requestPermission(POST_NOTIFICATIONS)
     }
@@ -59,7 +60,7 @@ class MainActivity : Activity() {
 
     private fun updateUi() {
         val hasRead = hasReadSmsPermission()
-        val default = getDefaultSmsPackage()
+        val default = getDefaultSmsPackage(this)
         val isDefault = packageName == default
 
         ui.readInfo.isEnabled = !isDefault
@@ -95,25 +96,26 @@ class MainActivity : Activity() {
         updateStatusNotification(this)
     }
 
-    private fun showSmsAppOptions(anchor: View) = PopupMenu(this, anchor).run {
-        inflate(R.menu.options_sms_app)
-        setOnMenuItemClickListener(::onOptionsItemSelected)
+    private fun showSmsAppOptions(anchor: View) =
+        PopupMenu(this, anchor).run {
+            inflate(R.menu.options_sms_app)
+            setOnMenuItemClickListener(::onOptionsItemSelected)
 
-        val preferences = appPreferences()
-        val canPost = canPostNotifications()
+            val preferences = appPreferences()
+            val canPost = canPostNotifications()
 
-        val log = menu.findItem(R.id.option_log_receipts)
-        log.isChecked = preferences.logReceipts
+            val log = menu.findItem(R.id.option_log_receipts)
+            log.isChecked = preferences.logReceipts
 
-        val notify = menu.findItem(R.id.option_notify_receipts)
-        notify.isChecked = canPost && preferences.notifyReceipts
-        notify.isEnabled = canPost
+            val notify = menu.findItem(R.id.option_notify_receipts)
+            notify.isChecked = canPost && preferences.notifyReceipts
+            notify.isEnabled = canPost
 
-        val store = menu.findItem(R.id.option_store_received_sms)
-        store.isChecked = preferences.storeReceivedSms
+            val store = menu.findItem(R.id.option_store_received_sms)
+            store.isChecked = preferences.storeReceivedSms
 
-        show()
-    }
+            show()
+        }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu ?: return false
@@ -158,16 +160,17 @@ class MainActivity : Activity() {
                 preferences.storeReceivedSms = !preferences.storeReceivedSms
             }
         }
+
         return true
     }
 
     private fun setSelfAsDefaultSmsApp() {
-        appPreferences().originalDefault = getDefaultSmsPackage()
+        appPreferences().originalDefault = getDefaultSmsPackage(this)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= 29) {
             val manager = getSystemService(RoleManager::class.java)
-            val intent = manager.createRequestRoleIntent(ROLE_SMS)
-            launchForUpdate(intent)
+            val request = manager.createRequestRoleIntent(ROLE_SMS)
+            launchForUpdate(request)
         } else {
             changeDefaultSmsAppOldMethod(packageName)
         }
@@ -175,12 +178,13 @@ class MainActivity : Activity() {
 
     private fun revertDefaultSmsApp() {
         val original = appPreferences().originalDefault
+
         when {
             original == null -> showRevertError()
 
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                val intent = packageManager.getLaunchIntentForPackage(original)
-                if (intent != null) launchForUpdate(intent) else showRevertError()
+            Build.VERSION.SDK_INT >= 29 -> {
+                val launch = packageManager.getLaunchIntentForPackage(original)
+                launch?.let { launchForUpdate(it) } ?: showRevertError()
             }
 
             else -> changeDefaultSmsAppOldMethod(original)
@@ -188,9 +192,9 @@ class MainActivity : Activity() {
     }
 
     private fun changeDefaultSmsAppOldMethod(packageName: String) {
-        val intent = Intent(Sms.Intents.ACTION_CHANGE_DEFAULT)
-        intent.putExtra(Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
-        launchForUpdate(intent)
+        val change = Intent(Sms.Intents.ACTION_CHANGE_DEFAULT)
+        change.putExtra(Sms.Intents.EXTRA_PACKAGE_NAME, packageName)
+        launchForUpdate(change)
     }
 
     private fun showRevertError() =
@@ -203,7 +207,8 @@ class MainActivity : Activity() {
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
-    ) = updateUi()
+    ) =
+        updateUi()
 
     private fun launchForUpdate(intent: Intent) =
         startActivityForResult(intent, 0)
@@ -212,5 +217,6 @@ class MainActivity : Activity() {
         requestCode: Int,
         resultCode: Int,
         data: Intent?
-    ) = updateUi()
+    ) =
+        updateUi()
 }

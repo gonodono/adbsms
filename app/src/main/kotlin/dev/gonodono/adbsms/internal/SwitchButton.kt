@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.Switch
 import dev.gonodono.adbsms.R
 
-class ButtonSwitch @JvmOverloads constructor(
+class SwitchButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.buttonSwitchStyle
@@ -16,13 +16,13 @@ class ButtonSwitch @JvmOverloads constructor(
         text = if (isChecked) textOn else textOff
     }
 
-    override fun setShowText(showText: Boolean) {}
-
     override fun setChecked(checked: Boolean) {
         if (isChecked == checked) return
         text = if (checked) textOn else textOff
         super.setChecked(checked)
     }
+
+    override fun setShowText(showText: Boolean) {}
 
     override fun toggle() {}
 }

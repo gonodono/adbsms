@@ -6,11 +6,13 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import android.os.Binder
+import android.os.Process.SHELL_UID
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 
 class AdbSmsProvider : ContentProvider() {
 
-    override fun onCreate(): Boolean = context?.hasReadSmsPermission() == true
+    override fun onCreate(): Boolean =
+        context?.hasReadSmsPermission() == true
 
     override fun query(
         uri: Uri,
@@ -66,14 +68,13 @@ class AdbSmsProvider : ContentProvider() {
             selectionArgs
         )
     }
-
-    private fun checkCallingProcess() {
-        if (Binder.getCallingUid() != 2000) throw SecurityException()
-        if (callingPackage != "com.android.shell") throw SecurityException()
-    }
 }
 
-private inline val ContentProvider.contentResolver: ContentResolver
+private fun checkCallingProcess() {
+    if (Binder.getCallingUid() != SHELL_UID) throw SecurityException()
+}
+
+private val ContentProvider.contentResolver: ContentResolver
     get() = checkNotNull(context) { "Context not found" }.contentResolver
 
 private fun Uri.toSmsUri(): Uri =

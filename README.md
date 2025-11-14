@@ -1,15 +1,18 @@
 # adbsms
 
-A simple Android app with a `ContentProvider` that relays requests from adb to
-the SMS Provider, allowing messages to be queried and modified over the debug
-bridge without causing `SecurityException`s due to missing permissions.
+A small and simple Android app with a `ContentProvider` that relays requests
+from adb to the SMS Provider, allowing messages to be queried and modified over
+the debug bridge without causing `SecurityException`s in certain environments
+due to missing permissions.
 
 <br />
 
+<!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
-<img src="images/screenshots.png" 
-alt="Screenshots of the app in light and dark modes." 
-width="30%" />
+    <!--suppress CheckImageSize -->
+    <img src="images/screenshots.png" 
+        alt="Screenshots of the app in light and dark modes." 
+        width="30%" />
 </p>
 
 <br />
@@ -107,28 +110,20 @@ given in the following table.
 
   I'm not encouraging anyone to prefer the pre-built APKs; they're simply a
   convenience for users who don't have the setup available to do it themselves,
-  or who just want a quick test. They're assembled using GitHub Actions and
-  [this local workflow][workflow], so you can be reasonably certain that there
-  are no malicious injections or modifications.
+  or those who just want a quick test. They're assembled using GitHub Actions
+  and [this local workflow][workflow], so you can be reasonably certain that
+  there are no malicious injections or modifications.
 
   The GitHub releases for automated builds will be created by user
   `github-actions`, whose name links to https://github.com/apps/github-actions,
   which actually redirects elsewhere if followed. Workflow execution details can
   be found on [the Actions tab][actions].
 
-+ All Provider operation requests are now guarded by a check against the calling 
-  process to ensure that they're coming from the adb daemon. The Caution alert
-  formerly found in this README's intro no longer applies.   
-
 + If you plan to use the **Full access** option in order to get at the hidden
   message types, you should know that not all SMS apps utilize each one. Though
   most use `inbox` and `sent` consistently, it seems that many apps simply don't
   use `draft` and/or the others at all. I'm guessing that they save those
   messages to internal storage instead, for some reason. Just a heads up.
-
-+ If you plan to use the **Full access** option on Lollipop, API levels 21 and
-  22, you will need to un-comment the `WRITE_SMS` permission in the manifest
-  (and probably suppress a warning or two, as well).
 
 + I haven't implemented every possible `ContentProvider` operation in
   [`AdbSmsProvider`][provider], but it does cover all of the required overrides.
@@ -162,13 +157,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 [columns]: https://developer.android.com/reference/android/provider/Telephony.TextBasedSmsColumns
-
 [releases]: https://github.com/gonodono/adbsms/releases
-
 [workflow]: .github/workflows/build_and_release_apk.yaml
-
 [actions]: https://github.com/gonodono/adbsms/actions
-
 [provider]: app/src/main/kotlin/dev/gonodono/adbsms/AdbSmsProvider.kt
-
 [issue]: https://github.com/gonodono/adbsms/issues/new

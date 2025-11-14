@@ -8,7 +8,7 @@ import dev.gonodono.adbsms.R
 class SwitchButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.buttonSwitchStyle
+    defStyleAttr: Int = R.attr.switchButtonStyle
 ) : Switch(context, attrs, defStyleAttr) {
 
     init {

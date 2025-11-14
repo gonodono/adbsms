@@ -7,8 +7,10 @@ plugins {
 
 android {
     namespace = "dev.gonodono.adbsms"
-    compileSdk = 36
 
+    compileSdk {
+        version = release(36)
+    }
     defaultConfig {
         applicationId = "dev.gonodono.adbsms"
         minSdk = 24

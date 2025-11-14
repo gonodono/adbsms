@@ -50,7 +50,7 @@ internal fun Activity.checkShowIntro(
     savedInstanceState: Bundle?,
     onFinished: () -> Unit
 ) {
-    if (savedInstanceState == null && !this.appPreferences().hideIntro) {
+    if (savedInstanceState == null && !this.appSettings().hideIntro) {
         AlertDialog.Builder(this)
             .setView(R.layout.dialog_intro)
             .setPositiveButton(R.string.label_close, null)
@@ -58,14 +58,14 @@ internal fun Activity.checkShowIntro(
             .show()
             .findViewById<CheckBox>(R.id.hide_intro)
             ?.setOnCheckedChangeListener { _, isChecked ->
-                this.appPreferences().hideIntro = isChecked
+                this.appSettings().hideIntro = isChecked
             }
     } else {
         onFinished()
     }
 }
 
-internal fun Context.openAppSettings() {
+internal fun Context.openSettingsAppPage() {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         .setData(Uri.fromParts("package", this.packageName, null))
     try {

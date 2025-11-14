@@ -34,9 +34,9 @@ private fun logReceivedSmsError(e: Throwable) =
     Log.e(Tag, "Error processing received SMS", e)
 
 private fun processReceivedSms(context: Context, intent: Intent) {
-    val preferences = context.appPreferences()
-    val log = preferences.logReceipts
-    val store = preferences.storeReceivedSms
+    val settings = context.appSettings()
+    val log = settings.logReceipts
+    val store = settings.storeReceivedSms
     if (!log && !store) return
 
     val messages = Sms.Intents.getMessagesFromIntent(intent)
@@ -111,8 +111,8 @@ class HeadlessSmsSendService : Service() {
 }
 
 private fun notifyMessageEvent(context: Context, event: String) {
-    val preferences = context.appPreferences()
+    val settings = context.appSettings()
     val message = context.getString(R.string.message_event, event)
-    if (preferences.logReceipts) Log.w(Tag, message)
-    if (preferences.notifyReceipts) postSmsAppNotification(context, message)
+    if (settings.logReceipts) Log.w(Tag, message)
+    if (settings.notifyReceipts) postSmsAppNotification(context, message)
 }

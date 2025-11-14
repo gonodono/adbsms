@@ -3,7 +3,7 @@
 
     <style name="Theme.adbsms" parent="android:Theme.Material.Light">
         <item name="android:textViewStyle">@style/Widget.adbsms.TextView</item>
-        <item name="buttonSwitchStyle">@style/Widget.adbsms.ButtonSwitch</item>
+        <item name="switchButtonStyle">@style/Widget.adbsms.SwitchButton</item>
     </style>
 
 </resources>

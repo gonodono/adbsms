@@ -20,13 +20,13 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import dev.gonodono.adbsms.databinding.ActivityMainBinding
-import dev.gonodono.adbsms.internal.appPreferences
+import dev.gonodono.adbsms.internal.appSettings
 import dev.gonodono.adbsms.internal.applyInsetsListener
 import dev.gonodono.adbsms.internal.canPostNotifications
 import dev.gonodono.adbsms.internal.checkShowIntro
 import dev.gonodono.adbsms.internal.hasPostNotificationsPermission
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
-import dev.gonodono.adbsms.internal.openAppSettings
+import dev.gonodono.adbsms.internal.openSettingsAppPage
 import dev.gonodono.adbsms.internal.refreshStatusNotification
 import dev.gonodono.adbsms.internal.updateStatusNotification
 
@@ -66,7 +66,7 @@ class MainActivity : Activity() {
         ui.readInfo.isEnabled = !isDefault
         ui.readSwitch.apply {
             if (hasRead) {
-                setOnClickListener { openAppSettings() }
+                setOnClickListener { openSettingsAppPage() }
                 contentDescription = getText(R.string.desc_revert_read_only)
             } else {
                 setOnClickListener { requestPermission(READ_SMS) }
@@ -101,43 +101,43 @@ class MainActivity : Activity() {
             inflate(R.menu.options_sms_app)
             setOnMenuItemClickListener(::onOptionsItemSelected)
 
-            val preferences = appPreferences()
+            val settings = appSettings()
             val canPost = canPostNotifications()
 
             val log = menu.findItem(R.id.option_log_receipts)
-            log.isChecked = preferences.logReceipts
+            log.isChecked = settings.logReceipts
 
             val notify = menu.findItem(R.id.option_notify_receipts)
-            notify.isChecked = canPost && preferences.notifyReceipts
+            notify.isChecked = canPost && settings.notifyReceipts
             notify.isEnabled = canPost
 
             val store = menu.findItem(R.id.option_store_received_sms)
-            store.isChecked = preferences.storeReceivedSms
+            store.isChecked = settings.storeReceivedSms
 
             show()
         }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu ?: return false
+
         menuInflater.inflate(R.menu.options_main, menu)
+
         return true
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menu ?: return false
 
-        val preferences = appPreferences()
         val canPost = canPostNotifications()
-
         val status = menu.findItem(R.id.option_show_status)
-        status.isChecked = canPost && preferences.showStatus
+        status.isChecked = canPost && appSettings().showStatus
         status.isEnabled = canPost
 
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val preferences = appPreferences()
+        val settings = appSettings()
 
         when (item.itemId) {
             // In case things get stuck due to bad timing with a launched op.
@@ -147,17 +147,17 @@ class MainActivity : Activity() {
                 Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
             }
             R.id.option_show_status -> {
-                preferences.showStatus = !preferences.showStatus
+                settings.showStatus = !settings.showStatus
                 updateStatusNotification(this)
             }
             R.id.option_log_receipts -> {
-                preferences.logReceipts = !preferences.logReceipts
+                settings.logReceipts = !settings.logReceipts
             }
             R.id.option_notify_receipts -> {
-                preferences.notifyReceipts = !preferences.notifyReceipts
+                settings.notifyReceipts = !settings.notifyReceipts
             }
             R.id.option_store_received_sms -> {
-                preferences.storeReceivedSms = !preferences.storeReceivedSms
+                settings.storeReceivedSms = !settings.storeReceivedSms
             }
         }
 
@@ -165,7 +165,7 @@ class MainActivity : Activity() {
     }
 
     private fun setSelfAsDefaultSmsApp() {
-        appPreferences().originalDefault = getDefaultSmsPackage(this)
+        appSettings().originalDefault = getDefaultSmsPackage(this)
 
         if (Build.VERSION.SDK_INT >= 29) {
             val manager = getSystemService(RoleManager::class.java)
@@ -177,7 +177,7 @@ class MainActivity : Activity() {
     }
 
     private fun revertDefaultSmsApp() {
-        val original = appPreferences().originalDefault
+        val original = appSettings().originalDefault
 
         when {
             original == null -> showRevertError()

@@ -15,22 +15,22 @@ import android.provider.Telephony.Sms.getDefaultSmsPackage
 import dev.gonodono.adbsms.MainActivity
 import dev.gonodono.adbsms.R
 
-const val STATUS_CHANNEL_ID = "status_alerts"
-const val STATUS_CHANNEL_NAME = "Status alerts"
-const val STATUS_REQUEST_CODE_READ = 0
-const val STATUS_REQUEST_CODE_FULL = 1
-const val STATUS_NOTIFICATION_ID = 0
+private const val StatusChannelId = "status_alerts"
+private const val StatusChannelName = "Status alerts"
+private const val StatusRequestCodeRead = 0
+private const val StatusRequestCodeFull = 1
+private const val StatusNotificationId = 0
 
 internal fun updateStatusNotification(context: Context) {
     val isDefault = context.packageName == getDefaultSmsPackage(context)
     val manager = context.getSystemService(NotificationManager::class.java)
 
-    if (context.appPreferences().showStatus &&
+    if (context.appSettings().showStatus &&
         (context.hasReadSmsPermission() || isDefault)
     ) {
         postStatusNotification(context, manager, isDefault)
     } else {
-        manager.cancel(STATUS_NOTIFICATION_ID)
+        manager.cancel(StatusNotificationId)
         cancelStatusActivityIntents(context)
     }
 }
@@ -48,21 +48,21 @@ private fun postStatusNotification(
     if (!context.canPostNotifications()) return
 
     val requestCode =
-        if (isDefault) STATUS_REQUEST_CODE_FULL
-        else STATUS_REQUEST_CODE_READ
+        if (isDefault) StatusRequestCodeFull
+        else StatusRequestCodeRead
     if (checkActivityIntent(context, requestCode) != null) return
 
     val otherCode =
-        if (isDefault) STATUS_REQUEST_CODE_READ
-        else STATUS_REQUEST_CODE_FULL
+        if (isDefault) StatusRequestCodeRead
+        else StatusRequestCodeFull
     checkActivityIntent(context, otherCode)?.cancel()
 
-    manager.ensureChannel(STATUS_CHANNEL_ID, STATUS_CHANNEL_NAME)
+    manager.ensureChannel(StatusChannelId, StatusChannelName)
 
     val textId =
         if (isDefault) R.string.status_full_access
         else R.string.status_read_enabled
-    val notification = createNotificationBuilder(context, STATUS_CHANNEL_ID)
+    val notification = createNotificationBuilder(context, StatusChannelId)
         .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(context.getText(R.string.notification_title_status))
         .setContentText(context.getText(textId))
@@ -70,12 +70,12 @@ private fun postStatusNotification(
         .setDeleteIntent(createStatusDeleteIntent(context))
         .setOngoing(true)
         .build()
-    manager.notify(STATUS_NOTIFICATION_ID, notification)
+    manager.notify(StatusNotificationId, notification)
 }
 
 private fun cancelStatusActivityIntents(context: Context) {
-    checkActivityIntent(context, STATUS_REQUEST_CODE_READ)?.cancel()
-    checkActivityIntent(context, STATUS_REQUEST_CODE_FULL)?.cancel()
+    checkActivityIntent(context, StatusRequestCodeRead)?.cancel()
+    checkActivityIntent(context, StatusRequestCodeFull)?.cancel()
 }
 
 private fun checkActivityIntent(
@@ -111,22 +111,22 @@ class StatusDeleteReceiver : BroadcastReceiver() {
         refreshStatusNotification(context)
 }
 
-const val SMS_APP_CHANNEL_ID = "sms_app_alerts"
-const val SMS_APP_CHANNEL_NAME = "SMS app alerts"
-const val SMS_APP_REQUEST_CODE = 10
+private const val SmsAppChannelId = "sms_app_alerts"
+private const val SmsAppChannelName = "SMS app alerts"
+private const val SmsAppRequestCode = 10
 
 internal fun postSmsAppNotification(context: Context, text: CharSequence) {
     val manager = context.getSystemService(NotificationManager::class.java)
-    manager.ensureChannel(SMS_APP_CHANNEL_ID, SMS_APP_CHANNEL_NAME)
+    manager.ensureChannel(SmsAppChannelId, SmsAppChannelName)
 
-    val notification = createNotificationBuilder(context, SMS_APP_CHANNEL_ID)
+    val notification = createNotificationBuilder(context, SmsAppChannelId)
         .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(context.getText(R.string.notification_title_app))
         .setContentText(text)
-        .setContentIntent(createActivityIntent(context, SMS_APP_REQUEST_CODE))
+        .setContentIntent(createActivityIntent(context, SmsAppRequestCode))
         .setAutoCancel(true)
         .build()
-    val id = context.appPreferences().nextSmsAppNotificationId()
+    val id = context.appSettings().nextSmsAppNotificationId()
     manager.notify(id, notification)
 }
 

@@ -38,7 +38,8 @@
 
     <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage() on API -->
     <!-- levels >= 30. The <queries> entry seems sufficient for 30..33, but later versions -->
-    <!-- apparently require the QUERY_ALL_PACKAGES permission. This really seems like a bug. -->
+    <!-- apparently require the QUERY_ALL_PACKAGES permission. This is possibly related to the -->
+    <!-- permissions mess noted above, but it's unclear why the version discrepancy exists. -->
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"

@@ -1,9 +1,15 @@
 # adbsms
 
-A small and simple Android app with a `ContentProvider` that relays requests
-from adb to the SMS Provider, allowing messages to be queried and modified over
-the debug bridge without causing `SecurityException`s in certain environments
-due to missing permissions.
+A small and simple Android app with a `ContentProvider` that can act as a relay
+between adb and the SMS Provider, allowing for access workarounds in
+environments with insufficient permissions or message type restrictions. For
+example:
+
++ The shell may lack some or all of the necessary SMS permissions, leading to
+  possible `SecurityException`s and other failures.
+
++ On Marshmallow and above, non-default apps can see only `inbox` and `sent`
+  messages, and the shell may be constrained to the same restricted view.
 
 <br />
 
@@ -136,7 +142,7 @@ given in the following table.
 
 MIT License
 
-Copyright (c) 2025 Mike M.
+Copyright (c) 2026 Mike M.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -20,7 +20,7 @@ class SmsReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Sms.Intents.SMS_DELIVER_ACTION) {
-            logInvalidBroadcast(intent, "SmsReceiver")
+            logInvalidBroadcast(intent)
             return
         }
 
@@ -81,7 +81,7 @@ class MmsReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Sms.Intents.WAP_PUSH_RECEIVED_ACTION) {
-            logInvalidBroadcast(intent, "MmsReceiver")
+            logInvalidBroadcast(intent)
             return
         }
 
@@ -91,8 +91,8 @@ class MmsReceiver : BroadcastReceiver() {
     }
 }
 
-private fun logInvalidBroadcast(intent: Intent, receiver: String) =
-    debugLog("Invalid broadcast to $receiver: $intent")
+private fun <T : BroadcastReceiver> T.logInvalidBroadcast(intent: Intent) =
+    debugLog("Invalid broadcast to ${this.javaClass.name}: $intent")
 
 class ComposeSmsActivity : Activity() {
 

@@ -13,7 +13,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
@@ -21,6 +20,7 @@ import android.view.WindowInsets
 import android.widget.CheckBox
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.annotation.RequiresApi
 import dev.gonodono.adbsms.BuildConfig
 import dev.gonodono.adbsms.R
 import java.util.concurrent.Executors

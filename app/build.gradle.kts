@@ -1,25 +1,19 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    id ("com.android.application")
+    id("com.android.application") version "9.2.1"
 }
 
 android {
     namespace = "dev.gonodono.adbsms"
 
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
     defaultConfig {
         applicationId = "dev.gonodono.adbsms"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 10
-        versionName = "0.0.10"
-    }
-    buildFeatures {
-        buildConfig = true
-        viewBinding = true
+        targetSdk = 37
+        versionCode = 11
+        versionName = "0.0.11"
     }
     buildTypes {
         release {
@@ -32,11 +26,5 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
     }
 }

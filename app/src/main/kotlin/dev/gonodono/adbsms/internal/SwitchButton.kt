@@ -19,6 +19,7 @@ class SwitchButton
 
     override fun setChecked(checked: Boolean) {
         if (isChecked == checked) return
+
         text = if (checked) textOn else textOff
         super.setChecked(checked)
     }

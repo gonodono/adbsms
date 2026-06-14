@@ -51,7 +51,7 @@ private fun processReceivedSms(context: Context, intent: Intent) {
 }
 
 private fun SmsMessage.sender(context: Context): String {
-    val address = displayOriginatingAddress
+    val address = this.displayOriginatingAddress
     address ?: return context.getString(R.string.unknown)
 
     if (Patterns.EMAIL_ADDRESS.matcher(address).matches()) return address
@@ -91,8 +91,9 @@ class MmsReceiver : BroadcastReceiver() {
     }
 }
 
-private fun <T : BroadcastReceiver> T.logInvalidBroadcast(intent: Intent) =
-    debugLog("Invalid broadcast to ${this.javaClass.name}: $intent")
+private fun <T : BroadcastReceiver> T.logInvalidBroadcast(intent: Intent) {
+    Log.d(Tag, "Invalid broadcast to ${javaClass.name}: $intent", null)
+}
 
 class ComposeSmsActivity : Activity() {
 
@@ -112,7 +113,11 @@ class HeadlessSmsSendService : Service() {
 
 private fun notifyMessageEvent(context: Context, event: String) {
     val settings = context.appSettings()
+    val log = settings.logReceipts
+    val notify = settings.notifyReceipts
+    if (!log && !notify) return
+
     val message = context.getString(R.string.message_event, event)
-    if (settings.logReceipts) Log.w(Tag, message)
-    if (settings.notifyReceipts) postSmsAppNotification(context, message)
+    if (log) Log.w(Tag, message)
+    if (notify) postSmsAppNotification(context, message)
 }

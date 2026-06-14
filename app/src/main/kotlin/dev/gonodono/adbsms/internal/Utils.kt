@@ -2,6 +2,7 @@ package dev.gonodono.adbsms.internal
 
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_SMS
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
@@ -20,16 +21,10 @@ import android.view.WindowInsets
 import android.widget.CheckBox
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import androidx.annotation.RequiresApi
-import dev.gonodono.adbsms.BuildConfig
 import dev.gonodono.adbsms.R
 import java.util.concurrent.Executors
 
 internal const val Tag = "adbsms"
-
-internal fun debugLog(message: String, throwable: Throwable? = null) {
-    if (BuildConfig.DEBUG) Log.d(Tag, message, throwable)
-}
 
 internal fun View.applyInsetsListener() {
     if (Build.VERSION.SDK_INT < 35) return
@@ -67,16 +62,17 @@ internal fun Activity.checkShowIntro(
 
 internal fun Context.openSettingsAppPage() {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        .setData(Uri.fromParts("package", this.packageName, null))
+    intent.setData(Uri.fromParts("package", this.packageName, null))
     try {
         startActivity(intent)
     } catch (e: ActivityNotFoundException) {
-        debugLog("Error opening Settings", e)
+        Log.d(Tag, "Error opening Settings", e)
         Toast.makeText(this, R.string.error_settings, LENGTH_SHORT).show()
     }
 }
 
-@RequiresApi(33)
+@SuppressLint("InlinedApi")
+//@RequiresApi(33)  <- androidx.annotations is soon required, but it adds ~4kb.
 internal fun Context.hasPostNotificationsPermission(): Boolean =
     this.checkSelfPermission(POST_NOTIFICATIONS) == PERMISSION_GRANTED
 

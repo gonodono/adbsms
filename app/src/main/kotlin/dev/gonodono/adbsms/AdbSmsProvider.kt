@@ -23,11 +23,11 @@ class AdbSmsProvider : ContentProvider() {
     ): Cursor? {
         checkCallingProcess()
         return contentResolver.query(
-            uri.toSmsUri(),
-            projection,
-            selection,
-            selectionArgs,
-            sortOrder
+            /* uri = */ uri.toSmsUri(),
+            /* projection = */ projection,
+            /* selection = */ selection,
+            /* selectionArgs = */ selectionArgs,
+            /* sortOrder = */ sortOrder
         )
     }
 
@@ -48,9 +48,9 @@ class AdbSmsProvider : ContentProvider() {
     ): Int {
         checkCallingProcess()
         return contentResolver.delete(
-            uri.toSmsUri(),
-            selection,
-            selectionArgs
+            /* url = */ uri.toSmsUri(),
+            /* where = */ selection,
+            /* selectionArgs = */ selectionArgs
         )
     }
 
@@ -62,10 +62,10 @@ class AdbSmsProvider : ContentProvider() {
     ): Int {
         checkCallingProcess()
         return contentResolver.update(
-            uri.toSmsUri(),
-            values,
-            selection,
-            selectionArgs
+            /* uri = */ uri.toSmsUri(),
+            /* values = */ values,
+            /* where = */ selection,
+            /* selectionArgs = */ selectionArgs
         )
     }
 }
@@ -75,13 +75,13 @@ private fun checkCallingProcess() {
 }
 
 private val ContentProvider.contentResolver: ContentResolver
-    get() = checkNotNull(context) { "Context not found" }.contentResolver
+    get() = checkNotNull(this.context) { "Context not found" }.contentResolver
 
 private fun Uri.toSmsUri(): Uri =
     Uri.Builder()
-        .scheme(scheme)
+        .scheme(this.scheme)
         .authority("sms")
-        .path(path)
-        .query(query)
-        .fragment(fragment)
+        .path(this.path)
+        .query(this.query)
+        .fragment(this.fragment)
         .build()

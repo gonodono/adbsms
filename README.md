@@ -13,17 +13,19 @@ example:
 
 <br />
 
+## Overview
+
+<br />
+
 <!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
     <!--suppress CheckImageSize -->
     <img src="images/screenshots.png" 
         alt="Screenshots of the app in light and dark modes." 
-        width="30%" />
+        width="35%" />
 </p>
 
 <br />
-
-## Overview
 
 The app offers two levels of access to the SMS Provider:
 
@@ -41,7 +43,7 @@ The app offers two levels of access to the SMS Provider:
   some very simplistic event logs for a few things, and there is no way to send
   anything out.
 
-After enabling the desired option, queries can be made as they usually are over
+After enabling the desired option, queries can be made as they normally are over
 adb by replacing the authority in any `content://sms` URI with `adbsms`. (The
 app's UI can be closed at this point; it's not involved in Provider operations.)
 
@@ -129,11 +131,11 @@ given in the following table.
   message types, you should know that not all SMS apps utilize each one. Though
   most use `inbox` and `sent` consistently, it seems that many apps simply don't
   use `draft` and/or the others at all. I'm guessing that they save those
-  messages to internal storage instead, for some reason. Just a heads up.
+  messages to internal storage instead, for some reason. Just a heads-up.
 
 + I haven't implemented every possible `ContentProvider` operation in
-  [`AdbSmsProvider`][provider], but it does cover all of the required overrides.
-  I _think_ that should be sufficient for everything that adb can do, but if you
+  [`AdbSmsProvider`][provider], but it does cover all the required overrides. I
+  _think_ that should be sufficient for everything that adb can do, but if you
   find something I've missed, please [file an issue][issue] for it.
 
 <br />

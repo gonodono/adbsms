@@ -17,9 +17,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import dev.gonodono.adbsms.databinding.ActivityMainBinding
+import dev.gonodono.adbsms.internal.SwitchButton
 import dev.gonodono.adbsms.internal.appSettings
 import dev.gonodono.adbsms.internal.applyInsetsListener
 import dev.gonodono.adbsms.internal.canPostNotifications
@@ -32,16 +33,14 @@ import dev.gonodono.adbsms.internal.updateStatusNotification
 
 class MainActivity : Activity() {
 
-    private lateinit var ui: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        ui = ActivityMainBinding.inflate(layoutInflater)
-        ui.root.applyInsetsListener()
-        setContentView(ui.root)
+        setContentView(R.layout.activity_main)
+        findViewById<View>(R.id.root).applyInsetsListener()
 
-        ui.smsAppOptions.setOnClickListener(::showSmsAppOptions)
+        findViewById<View>(R.id.sms_app_options)
+            .setOnClickListener(::showSmsAppOptions)
 
         checkShowIntro(savedInstanceState, ::checkPostNotificationsPermission)
     }
@@ -63,8 +62,8 @@ class MainActivity : Activity() {
         val default = getDefaultSmsPackage(this)
         val isDefault = packageName == default
 
-        ui.readInfo.isEnabled = !isDefault
-        ui.readSwitch.apply {
+        findViewById<View>(R.id.read_info).isEnabled = !isDefault
+        findViewById<SwitchButton>(R.id.read_switch).apply {
             if (hasRead) {
                 setOnClickListener { openSettingsAppPage() }
                 contentDescription = getText(R.string.desc_revert_read_only)
@@ -76,12 +75,13 @@ class MainActivity : Activity() {
             isChecked = hasRead
         }
 
-        ui.fullInfo.text = SpannableStringBuilder().apply {
-            appendLine(getText(R.string.label_full_info))
-            val shrinkSpan = RelativeSizeSpan(0.9F)
-            append(default.toString(), shrinkSpan, SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-        ui.fullSwitch.apply {
+        findViewById<TextView>(R.id.full_info).text =
+            SpannableStringBuilder().apply {
+                appendLine(getText(R.string.label_full_info))
+                val shrinkSpan = RelativeSizeSpan(0.9F)
+                append(default.toString(), shrinkSpan, SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        findViewById<SwitchButton>(R.id.full_switch).apply {
             if (isDefault) {
                 setOnClickListener { revertDefaultSmsApp() }
                 contentDescription = getText(R.string.desc_revert_full_access)
@@ -91,7 +91,7 @@ class MainActivity : Activity() {
             }
             isChecked = isDefault
         }
-        ui.smsAppOptions.isEnabled = isDefault
+        findViewById<View>(R.id.sms_app_options).isEnabled = isDefault
 
         updateStatusNotification(this)
     }

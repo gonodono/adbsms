@@ -138,6 +138,13 @@ given in the following table.
   _think_ that should be sufficient for everything that adb can do, but if you
   find something I've missed, please [file an issue][issue] for it.
 
++ I keep forgetting that I set the `minSdk` to 24, which is Nougat, though I'd
+  originally intended Lollipop to be the minimum. If you're cloning the repo,
+  I'll assume that you can figure out where to add the necessary version checks
+  and such should you need to go lower. If anyone really needs the pre-built APK
+  to work with a prior version, [file an issue][issue] as a request for the
+  desired minimum and I'll see what I can do.
+
 <br />
 
 ## License

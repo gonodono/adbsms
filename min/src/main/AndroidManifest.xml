@@ -6,12 +6,6 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
-    <!-- All of these except RECEIVE_MMS are required for getDefaultSmsPackage() -->
-    <!-- to work correctly on newer Android versions. If you're missing any, that -->
-    <!-- method may return null while your app is the default SMS app, even though the -->
-    <!-- app will still function as the default. What a mess Android's SMS has become! -->
-    <!-- The system's list of these is in com.android.internal.telephony.SmsApplication. -->
-
     <uses-permission
         android:name="android.permission.READ_SMS"
         tools:ignore="SmsAndCallLogPolicy" />
@@ -30,57 +24,24 @@
     <uses-permission
         android:name="android.permission.READ_CELL_BROADCASTS"
         tools:ignore="SmsAndCallLogPolicy" />
-    <uses-permission
-        android:name="android.permission.RECEIVE_MMS"
-        tools:ignore="SmsAndCallLogPolicy" />
-
-
-    <!-- One of <queries> or <uses-permission> is required for getDefaultSmsPackage() on API -->
-    <!-- levels >= 30. The <queries> entry seems sufficient for 30..33, but later versions -->
-    <!-- apparently require the QUERY_ALL_PACKAGES permission. This is possibly related to the -->
-    <!-- permissions mess noted above, but it's unclear why the version discrepancy exists. -->
-
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="PackageVisibilityPolicy,QueryAllPackagesPermission" />
-
-    <!-- <queries> -->
-    <!--     <intent> -->
-    <!--         <action android:name="android.provider.Telephony.SMS_DELIVER" /> -->
-    <!--     </intent> -->
-    <!-- </queries> -->
-
-
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.adbsms">
-
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:label="adbsms.min"
+        tools:ignore="MissingClass">
 
         <provider
             android:name=".AdbSmsProvider"
-            android:authorities="adbsms"
+            android:authorities="adbsms.min"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 
-        <receiver android:name=".internal.StatusDeleteReceiver" />
 
+        <!-- Entries required for default SMS app. Component classes don't exist, will throw. -->
 
-        <!-- Default SMS app components -->
-
+        <!--suppress AndroidDomInspection -->
         <receiver
-            android:name=".internal.SmsReceiver"
+            android:name=".SmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
@@ -88,8 +49,9 @@
             </intent-filter>
         </receiver>
 
+        <!--suppress AndroidDomInspection -->
         <receiver
-            android:name=".internal.MmsReceiver"
+            android:name=".MmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>
@@ -98,8 +60,9 @@
             </intent-filter>
         </receiver>
 
+        <!--suppress AndroidDomInspection -->
         <activity
-            android:name=".internal.ComposeSmsActivity"
+            android:name=".ComposeSmsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -115,8 +78,9 @@
             </intent-filter>
         </activity>
 
+        <!--suppress AndroidDomInspection -->
         <service
-            android:name=".internal.HeadlessSmsSendService"
+            android:name=".HeadlessSmsSendService"
             android:exported="true"
             android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
             <intent-filter>

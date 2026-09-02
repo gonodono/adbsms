@@ -3,14 +3,14 @@ plugins {
 }
 
 android {
-    namespace = "dev.gonodono.adbsms"
+    namespace = "dev.gonodono.adbsms.min"
 
     compileSdk {
         version = release(37)
     }
     defaultConfig {
-        applicationId = "dev.gonodono.adbsms"
-        minSdk = 24
+        applicationId = "dev.gonodono.adbsms.min"
+        minSdk = 19
         targetSdk = 37
 
         val code =
@@ -28,5 +28,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    packaging {
+        resources {
+            // Several *.kotlin_builtins are always included, for some reason,
+            // even if we use Groovy instead. This excludes everything kotlin.
+            excludes.add("**/kotlin/**")
+        }
     }
 }

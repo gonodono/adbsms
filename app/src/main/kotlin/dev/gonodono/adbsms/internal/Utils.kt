@@ -94,8 +94,8 @@ internal fun BroadcastReceiver.doAsync(
         } catch (e: Throwable) {
             onError?.invoke(e)
         } finally {
-            executor.shutdown()
             pendingResult.finish()
+            executor.shutdown()
         }
     }
 }

@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "adbsms"
 
 include(":app")
+include(":min")

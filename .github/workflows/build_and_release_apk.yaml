@@ -1,4 +1,4 @@
-name: Build and release APK
+name: Build and release APKs
 
 on:
   push:
@@ -11,12 +11,12 @@ jobs:
 
     steps:
       - name: Check out main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: 17
@@ -27,27 +27,28 @@ jobs:
       - name: Build
         run: ./gradlew assembleRelease --stacktrace
 
-      - name: Rename file
+      - name: Move and rename APKs
         run: |
-          cd app/build/outputs/apk/release
-          mv app-release.apk adbsms.apk
+          mv app/build/outputs/apk/release/app-release.apk adbsms.apk
+          mv min/build/outputs/apk/release/min-release.apk adbsms.min.apk
 
-      - name: Generate checksum
+      - name: Generate checksums
         run: |
-          cd app/build/outputs/apk/release
-          sha256sum adbsms.apk >> checksum.txt
+          sha256sum adbsms.apk >> checksums.txt
+          sha256sum adbsms.min.apk >> checksums.txt
 
       - name: Generate short hash
         id: short-hash
         run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
-            app/build/outputs/apk/release/adbsms.apk
-            app/build/outputs/apk/release/checksum.txt
+            adbsms.apk
+            adbsms.min.apk
+            checksums.txt
           body: |
-            Automated build: Commit ${{ steps.short-hash.outputs.hash }}
+            Automated build: ${{ steps.short-hash.outputs.hash }}
             
             ${{ github.event.head_commit.message }}

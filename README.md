@@ -52,7 +52,7 @@ The app offers two levels of access to the SMS Provider:
 
 - **Full access**, by temporarily assuming the default SMS app role
 
-  This one will grant you full read and write access on each applicable version,
+  This one will grant you full read and write access on each supported version,
   but your messaging will be largely nonfunctional while adbsms is the default.
   The only fallback facility currently provided is (optional) incoming SMS
   processing and storage to the Provider. Nothing else is handled, aside from
@@ -60,16 +60,26 @@ The app offers two levels of access to the SMS Provider:
   anything out.
 
 After enabling the desired option, queries can be made as they normally are over
-`adb` by replacing the authority in any `content://sms` URI with `adbsms`.
+`adb` by replacing the authority in any `content://sms` URI with `adbsms`. See
+the [Examples](#examples) below.
 
-The app's UI can be closed at this point. It's not involved in Provider
-operations.
+If you'd rather toggle these access options from the shell, consult the
+[Headless](#headless-new) section.
+
+Should you not need the UI at all, the [Minimal](#minimal-new) version might be
+preferable.
+
+<br />
+
+> [!NOTE] 
+> The app's UI does _not_ need to be open while running queries. It's not
+> involved in Provider operations.
 
 <br />
 
 ## Examples
 
-You'll have to check adb's documentation for details on all of its available
+You'll have to check `adb`'s documentation for details on all of its available
 options, but these few examples should at least clarify the URI modification
 necessary to access this app's Provider.
 
@@ -142,7 +152,8 @@ collated here for convenience:
 
 The app's UI can be bypassed entirely, if desired. As with any app, both the
 permission and the default app status can be set through the relevant Settings
-pages, manually or programmatically, if such a flow would be preferable.
+pages, manually or programmatically, if such a flow would better suit your
+needs.
 
 Alternatively, it can all be handled through the shell, as the rest of this
 section demonstrates.
@@ -185,8 +196,8 @@ adb shell cmd role add-role-holder android.app.role.SMS dev.gonodono.adbsms
 
 Call the add command again with the previous app when finished. If there wasn't
 one set, you can use `remove-role-holder` instead, but you might get an
-`Exception` if the system expects a non-empty value after the update. The remove
-will likely still work; it'll just want to complain about the missing value.
+`Exception` if the system tries to inspect the new default without checking. The
+remove will likely still work; it may just complain about the missing value.
 
 #### API levels < 28
 
@@ -203,8 +214,7 @@ adb shell settings get secure sms_default_application
 adb shell settings put secure sms_default_application "dev.gonodono.adbsms"
 ```
 
-…and then call `put` again with the previous default when done, or `delete` if
-none.
+…then call `put` again with the previous default when done, or `delete` if none.
 
 Unfortunately, I'm not sure that this method is reliable everywhere since the
 `sms_default_application` key is hidden from the SDK. A potential fallback could
@@ -214,9 +224,8 @@ be had by launching the default app change action.
 adb shell am start -a android.provider.Telephony.ACTION_CHANGE_DEFAULT --es package "dev.gonodono.adbsms"
 ```
 
-Some sort of UI interaction will be required since this does display a dialog,
-though it should be relatively simple and amenable to the standard automation
-tools.
+Some sort of UI interaction would be required since this does display a dialog,
+though it is relatively simple and amenable to the standard automation tools.
 
 <br />
 
@@ -224,32 +233,30 @@ tools.
 
 A zero-frills, no-UI version is now available in the `:min` module. It's meant
 for headless use in scripts, with agents, etc. The only class it contains is the
-relay `ContentProvider`, and its access options must be enabled through Settings
+relay `ContentProvider`, and its access options must be handled through Settings
 or the shell.
 
-This minimal version has a different application ID – `dev.gonodono.adbsms.min`
-– and a different content authority – `adbsms.min` – so it can be installed
-alongside the original app, if need be. (Yes, there is a dot in the authority.
-It keeps the identifier differences clear and consistent everywhere.)
+This minimal version has a distinct application ID – `dev.gonodono.adbsms.min` –
+and its own content authority – `adbsms.min` – so it can be installed alongside
+the main app. (Yes, there is a dot in the authority. This pattern makes for
+clear and consistent identifiers everywhere.)
 
-This version can also assume the default SMS app role for full access, since it
-has the necessary components registered. However, none of the underlying classes
-actually exist, and any attempts to launch them will result in `Exception`s.
+This version also can assume the default SMS app role for full access, since it
+has all the necessary components registered. However, none of the underlying
+classes actually exist, and attempts to access any of them will result in
+`Exception`s.
 
 Consequently, the minimal app does _not_ offer the incoming SMS storage
 fallback. Indeed, messaging is completely nonfunctional while adbsms.min (actual
 app name) is the default.
 
-Numerical versioning for adbsms.min will start at 12 – release `0.0.12` – in
-order to sync with the original app.
-
 ### Command line changes
 
 The only differences here are the application ID and authority substitutions,
-which amount to appending the `.min` suffix to the original identifiers.
+which amount to appending the `.min` suffix to the main app's identifiers.
 
-For instance, to set up read-only access headlessly, amend the application ID in
-the command given [above](#read-only-setup).
+For instance, to set up read-only access, amend the application ID in the
+command given [above](#read-only-setup).
 
 ```
 adb shell pm grant dev.gonodono.adbsms.min android.permission.READ_SMS
@@ -298,24 +305,23 @@ be found on [the Actions tab][actions].
 
 ### Minimum Android versions
 
+The `minSdk` for the `:app` module is 24 (Nougat). If you need that to be lower
+and you're cloning the repo, I'll assume that you can figure out where to add
+the necessary checks and such. If anyone really needs the pre-built APK to
+support prior versions, [file an issue][issue] as a request for the desired
+minimum and I'll see what I can do.
+
 The `minSdk` for the `:min` module is 19 (KitKat), which is the version that
 introduced the official SMS API. I doubt that anyone is running anything that
-old anymore, but it would be the same code with any newer one too, so might as
-well.
-
-The `minSdk` for the `:app` module is 24 (Nougat), since it makes the code a bit
-simpler as far as version checks and API differences and such. If you need that
-to be lower, and you're cloning the repo, I'll assume that you can figure out
-where to add the necessary version checks and such. If anyone really needs the
-pre-built APK to work with a prior version, [file an issue][issue] as a request
-for the desired minimum and I'll see what I can do.
+old anymore, but it would be the same code with any newer version too, so might
+as well.
 
 ### Supported Provider operations
 
 I haven't implemented every possible `ContentProvider` operation in either [the
-original `AdbSmsProvider`][provider] or [the minimal one][provider.min], but
-they do cover all the required overrides. I _think_ that should be sufficient
-for everything that `adb` can do, but if you find something I've missed, please
+main `AdbSmsProvider`][provider] or [the minimal one][provider.min], but they do
+cover all the required overrides. I _think_ that should be sufficient for
+everything that `adb` can do, but if you find something I've missed, please
 [file an issue][issue] for it.
 
 ### Full access limitations
@@ -323,22 +329,20 @@ for everything that `adb` can do, but if you find something I've missed, please
 If you plan to use the **Full access** option in order to get at the hidden
 message types, you should know that not all SMS apps utilize each one. Though
 most use `inbox` and `sent` consistently, it seems that many apps don't use
-`draft` and/or the others at all. I'm guessing that they save those messages to
-internal storage instead, for some reason. Just a heads-up.
+`draft` and/or the others at all. Apparently they save those messages to
+internal storage instead, for whatever reason. Just a heads-up.
 
 ### No more golf
 
 Ever since I added the automated build and release, I've been working to shrink
 (golf) the APK by various means, mainly as a selling point, I guess. I won't be
-doing that anymore, since there's a whole module now dedicated to a minimal size
-implementation. I'll try to keep things as small as is reasonably possible, but
-`adbsms.apk`'s size may fluctuate in the future, rather than decreasing
-monotonically.
+doing that anymore, since there's now a separate module dedicated to a minimal
+size implementation. I'll generally try to keep things small, but `adbsms.apk`'s
+size may fluctuate in the future, rather than decreasing monotonically.
 
-It should also be noted that `:min` is about as bare-bones as is feasible
-without extraordinary effort, so even small differences between build tool
-versions may be enough to effect `adbsms.min.apk`'s size, which is therefore
-liable to fluctuate as well.
+It should also be noted that `:min` is about as bare-bones as is feasible, so
+even small differences between build tool versions may be enough to effect
+`adbsms.min.apk`'s size, which is therefore liable to fluctuate as well.
 
 ### Bug reports
 

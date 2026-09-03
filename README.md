@@ -72,8 +72,8 @@ preferable.
 <br />
 
 > [!NOTE] 
-> The app's UI does _not_ need to be open while running queries. It's not
-> involved in Provider operations.
+> The app's UI can be closed while running queries. It's not involved in
+> Provider operations.
 
 <br />
 
@@ -152,8 +152,7 @@ collated here for convenience:
 
 The app's UI can be bypassed entirely, if desired. As with any app, both the
 permission and the default app status can be set through the relevant Settings
-pages, manually or programmatically, if such a flow would better suit your
-needs.
+pages, manually or programmatically.
 
 Alternatively, it can all be handled through the shell, as the rest of this
 section demonstrates.
@@ -231,15 +230,15 @@ though it is relatively simple and amenable to the standard automation tools.
 
 ## Minimal <sup>New</sup>
 
-A zero-frills, no-UI version is now available in the `:min` module. It's meant
-for headless use in scripts, with agents, etc. The only class it contains is the
-relay `ContentProvider`, and its access options must be handled through Settings
-or the shell.
+A zero-frills, no-UI version – adbsms.min – is now available in the `:min`
+module. It's meant for headless use in scripts, with agents, etc. The only class
+it contains is the relay `ContentProvider`, and its access options must be
+handled through Settings or the shell.
 
 This minimal version has a distinct application ID – `dev.gonodono.adbsms.min` –
 and its own content authority – `adbsms.min` – so it can be installed alongside
-the main app. (Yes, there is a dot in the authority. This pattern makes for
-clear and consistent identifiers everywhere.)
+the main app. (Yes, there is a dot in the authority. This suffix pattern makes
+for clear and consistent identifiers everywhere.)
 
 This version also can assume the default SMS app role for full access, since it
 has all the necessary components registered. However, none of the underlying
@@ -247,8 +246,8 @@ classes actually exist, and attempts to access any of them will result in
 `Exception`s.
 
 Consequently, the minimal app does _not_ offer the incoming SMS storage
-fallback. Indeed, messaging is completely nonfunctional while adbsms.min (actual
-app name) is the default.
+fallback. Indeed, messaging is completely nonfunctional while adbsms.min is the
+default.
 
 ### Command line changes
 
@@ -287,6 +286,10 @@ debug key, which is the current setup in each module's `build.gradle.kts`. These
 apps aren't published anywhere, as they're intended to be sort of homebrew tools
 for developers and power users, and the unusual configuration is used to apply
 ProGuard and whatnot to "unsigned" builds.
+
+> [!NOTE]
+> Signing these APKs with a debug key means that the key is going to change for
+> each release. Users will have to uninstall and reinstall in order to update.
 
 I'm not encouraging anyone to prefer the pre-built APKs; they're simply a
 convenience for users who don't have the setup available to do it themselves, or

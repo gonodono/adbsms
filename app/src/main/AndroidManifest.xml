@@ -70,7 +70,7 @@
 
         <provider
             android:name=".AdbSmsProvider"
-            android:authorities="adbsms"
+            android:authorities="adbsms;adbmms;adbmms-sms"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 

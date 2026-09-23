@@ -13,17 +13,17 @@ internal value class AppSettings(private val sp: SharedPreferences) {
         get() = sp.getBoolean(HideIntro, false)
         set(value) = sp.edit().putBoolean(HideIntro, value).apply()
 
-    var showStatus: Boolean
-        get() = sp.getBoolean(ShowStatus, true)
-        set(value) = sp.edit().putBoolean(ShowStatus, value).apply()
-
-    var logReceipts: Boolean
-        get() = sp.getBoolean(LogReceipts, false)
-        set(value) = sp.edit().putBoolean(LogReceipts, value).apply()
+    var notifyStatus: Boolean
+        get() = sp.getBoolean(NotifyStatus, true)
+        set(value) = sp.edit().putBoolean(NotifyStatus, value).apply()
 
     var notifyReceipts: Boolean
         get() = sp.getBoolean(NotifyReceipts, true)
         set(value) = sp.edit().putBoolean(NotifyReceipts, value).apply()
+
+    var logReceipts: Boolean
+        get() = sp.getBoolean(LogReceipts, false)
+        set(value) = sp.edit().putBoolean(LogReceipts, value).apply()
 
     var storeReceivedSms: Boolean
         get() = sp.getBoolean(StoreReceivedSms, true)
@@ -41,9 +41,9 @@ internal value class AppSettings(private val sp: SharedPreferences) {
 }
 
 private const val HideIntro = "hide_intro"
-private const val ShowStatus = "show_status"
-private const val LogReceipts = "log_receipts"
+private const val NotifyStatus = "notify_status"
 private const val NotifyReceipts = "notify_receipts"
+private const val LogReceipts = "log_receipts"
 private const val StoreReceivedSms = "store_received_sms"
 private const val OriginalDefault = "original_default"
 private const val SmsAppNotificationId = "sms_app_notification_id"

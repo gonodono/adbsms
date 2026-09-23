@@ -25,7 +25,7 @@ internal fun updateStatusNotification(context: Context) {
     val isDefault = context.packageName == getDefaultSmsPackage(context)
     val manager = context.getSystemService(NotificationManager::class.java)
 
-    if (context.appSettings().showStatus &&
+    if (context.appSettings().notifyStatus &&
         (context.hasReadSmsPermission() || isDefault)
     ) {
         postStatusNotification(context, manager, isDefault)
@@ -33,11 +33,6 @@ internal fun updateStatusNotification(context: Context) {
         manager.cancel(StatusNotificationId)
         cancelStatusActivityIntents(context)
     }
-}
-
-internal fun refreshStatusNotification(context: Context) {
-    cancelStatusActivityIntents(context)
-    updateStatusNotification(context)
 }
 
 private fun postStatusNotification(
@@ -62,14 +57,15 @@ private fun postStatusNotification(
     val textId =
         if (isDefault) R.string.status_full_access
         else R.string.status_read_enabled
-    val notification = createNotificationBuilder(context, StatusChannelId)
-        .setSmallIcon(R.drawable.ic_notification)
-        .setContentTitle(context.getText(R.string.notification_title_status))
-        .setContentText(context.getText(textId))
-        .setContentIntent(createActivityIntent(context, requestCode))
-        .setDeleteIntent(createStatusDeleteIntent(context))
-        .setOngoing(true)
-        .build()
+    val notification =
+        createNotificationBuilder(context, StatusChannelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getText(R.string.notification_title_status))
+            .setContentText(context.getText(textId))
+            .setContentIntent(createActivityIntent(context, requestCode))
+            .setDeleteIntent(createStatusDeleteIntent(context))
+            .setOngoing(true)
+            .build()
     manager.notify(StatusNotificationId, notification)
 }
 
@@ -107,8 +103,10 @@ private fun createStatusDeleteIntent(context: Context): PendingIntent? {
 
 class StatusDeleteReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) =
-        refreshStatusNotification(context)
+    override fun onReceive(context: Context, intent: Intent) {
+        cancelStatusActivityIntents(context)
+        updateStatusNotification(context)
+    }
 }
 
 private const val SmsAppChannelId = "sms_app_alerts"
@@ -119,13 +117,14 @@ internal fun postSmsAppNotification(context: Context, text: CharSequence) {
     val manager = context.getSystemService(NotificationManager::class.java)
     manager.ensureChannel(SmsAppChannelId, SmsAppChannelName)
 
-    val notification = createNotificationBuilder(context, SmsAppChannelId)
-        .setSmallIcon(R.drawable.ic_notification)
-        .setContentTitle(context.getText(R.string.notification_title_app))
-        .setContentText(text)
-        .setContentIntent(createActivityIntent(context, SmsAppRequestCode))
-        .setAutoCancel(true)
-        .build()
+    val notification =
+        createNotificationBuilder(context, SmsAppChannelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getText(R.string.notification_title_app))
+            .setContentText(text)
+            .setContentIntent(createActivityIntent(context, SmsAppRequestCode))
+            .setAutoCancel(true)
+            .build()
     val id = context.appSettings().nextSmsAppNotificationId()
     manager.notify(id, notification)
 }

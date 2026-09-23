@@ -34,8 +34,8 @@ jobs:
 
       - name: Generate checksums
         run: |
-          sha256sum adbsms.apk >> checksums.txt
-          sha256sum adbsms.min.apk >> checksums.txt
+          sha256sum adbsms.apk >> checksums.sha256
+          sha256sum adbsms.min.apk >> checksums.sha256
 
       - name: Generate short hash
         id: short-hash
@@ -47,7 +47,7 @@ jobs:
           files: |
             adbsms.apk
             adbsms.min.apk
-            checksums.txt
+            checksums.sha256
           body: |
             Automated build: ${{ steps.short-hash.outputs.hash }}
             

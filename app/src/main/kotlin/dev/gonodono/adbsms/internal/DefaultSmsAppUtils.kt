@@ -113,11 +113,11 @@ class HeadlessSmsSendService : Service() {
 
 private fun notifyMessageEvent(context: Context, event: String) {
     val settings = context.appSettings()
-    val log = settings.logReceipts
     val notify = settings.notifyReceipts
-    if (!log && !notify) return
+    val log = settings.logReceipts
+    if (!notify && !log) return
 
     val message = context.getString(R.string.message_event, event)
-    if (log) Log.w(Tag, message)
     if (notify) postSmsAppNotification(context, message)
+    if (log) Log.w(Tag, message)
 }

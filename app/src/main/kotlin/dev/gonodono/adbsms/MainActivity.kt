@@ -28,7 +28,6 @@ import dev.gonodono.adbsms.internal.checkShowIntro
 import dev.gonodono.adbsms.internal.hasPostNotificationsPermission
 import dev.gonodono.adbsms.internal.hasReadSmsPermission
 import dev.gonodono.adbsms.internal.openSettingsAppPage
-import dev.gonodono.adbsms.internal.refreshStatusNotification
 import dev.gonodono.adbsms.internal.updateStatusNotification
 
 class MainActivity : Activity() {
@@ -104,12 +103,12 @@ class MainActivity : Activity() {
             val settings = appSettings()
             val canPost = canPostNotifications()
 
-            val log = menu.findItem(R.id.option_log_receipts)
-            log.isChecked = settings.logReceipts
-
             val notify = menu.findItem(R.id.option_notify_receipts)
             notify.isChecked = canPost && settings.notifyReceipts
             notify.isEnabled = canPost
+
+            val log = menu.findItem(R.id.option_log_receipts)
+            log.isChecked = settings.logReceipts
 
             val store = menu.findItem(R.id.option_store_received_sms)
             store.isChecked = settings.storeReceivedSms
@@ -129,8 +128,8 @@ class MainActivity : Activity() {
         menu ?: return false
 
         val canPost = canPostNotifications()
-        val status = menu.findItem(R.id.option_show_status)
-        status.isChecked = canPost && appSettings().showStatus
+        val status = menu.findItem(R.id.option_notify_status)
+        status.isChecked = canPost && appSettings().notifyStatus
         status.isEnabled = canPost
 
         return true
@@ -143,18 +142,18 @@ class MainActivity : Activity() {
             // In case things get stuck due to bad timing with a launched op.
             R.id.option_refresh_ui -> {
                 updateUi()
-                refreshStatusNotification(this)
+                updateStatusNotification(this)
                 Toast.makeText(this, R.string.refreshed, LENGTH_SHORT).show()
             }
-            R.id.option_show_status -> {
-                settings.showStatus = !settings.showStatus
+            R.id.option_notify_status -> {
+                settings.notifyStatus = !settings.notifyStatus
                 updateStatusNotification(this)
-            }
-            R.id.option_log_receipts -> {
-                settings.logReceipts = !settings.logReceipts
             }
             R.id.option_notify_receipts -> {
                 settings.notifyReceipts = !settings.notifyReceipts
+            }
+            R.id.option_log_receipts -> {
+                settings.logReceipts = !settings.logReceipts
             }
             R.id.option_store_received_sms -> {
                 settings.storeReceivedSms = !settings.storeReceivedSms

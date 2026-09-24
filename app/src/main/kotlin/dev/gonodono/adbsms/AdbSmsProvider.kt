@@ -128,14 +128,6 @@ private fun processCall(
         "storeReceivedSms" -> {
             processBooleanCall(method, arg, settings::storeReceivedSms)
         }
-        "originalDefault" -> {
-            if (arg == null) {
-                Bundle().apply { putString(method, settings.originalDefault) }
-            } else {
-                settings.originalDefault = arg
-                Bundle.EMPTY
-            }
-        }
         "updateStatus" -> {
             updateStatusNotification(context)
             Bundle.EMPTY

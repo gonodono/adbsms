@@ -117,16 +117,16 @@ private fun processCall(
     val settings = context.appSettings()
     return when (method) {
         "notifyStatus" -> {
-            processBooleanCall(method, arg, settings::notifyStatus)
+            processBooleanCall(settings::notifyStatus, method, arg)
         }
         "notifyReceipts" -> {
-            processBooleanCall(method, arg, settings::notifyReceipts)
+            processBooleanCall(settings::notifyReceipts, method, arg)
         }
         "logReceipts" -> {
-            processBooleanCall(method, arg, settings::logReceipts)
+            processBooleanCall(settings::logReceipts, method, arg)
         }
         "storeReceivedSms" -> {
-            processBooleanCall(method, arg, settings::storeReceivedSms)
+            processBooleanCall(settings::storeReceivedSms, method, arg)
         }
         "updateStatus" -> {
             updateStatusNotification(context)
@@ -139,9 +139,9 @@ private fun processCall(
 }
 
 private fun processBooleanCall(
+    setting: KMutableProperty0<Boolean>,
     method: String,
-    arg: String?,
-    setting: KMutableProperty0<Boolean>
+    arg: String?
 ): Bundle =
     if (arg == null) {
         Bundle().apply { putBoolean(method, setting.get()) }

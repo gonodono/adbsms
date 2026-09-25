@@ -50,7 +50,7 @@ client is so designed, RCS may also be found in the former.
 
 ### Access options
 
-The app offers two levels of access:
+The app offers two levels of access to the system Providers:
 
 - **Read-only**, by acquiring the `READ_SMS` permission
 
@@ -81,8 +81,8 @@ version.
 
 ### Accessory features
 
-These are not vital to the core function, but they might be handy if you have to
-use adbsms, especially on a personal device.
+These aren't strictly relevant to the core function, but they might be handy,
+especially if using adbsms on a personal device.
 
 - A persistent status notification is available in both access modes. It's meant
   mainly so that you don't forget if you've set this app as the default.
@@ -97,11 +97,10 @@ While adbsms is the default SMS app, these options are also offered:
   event notices with no actual message data. Nothing for RCS again because of
   the missing API.
 
-These features are all toggled through user settings that can also be modified
-from the shell. Status notification updates can be triggered from there as well,
-allowing for completely headless operation. Refer to the
-[Accessory feature settings](#accessory-feature-settings) under that section for
-details.
+These features are all toggled through user settings that can also be
+[modified from the shell](#accessory-feature-settings). Status notification
+updates can be [triggered from there](#status-notification-updates) as well,
+allowing for completely headless operation.
 
 If you don't need any of these bells or whistles – e.g., if you intend for quick
 and temporary command line usage, as in a script – the [Minimal](#minimal)
@@ -115,11 +114,10 @@ You'll have to check `adb`'s documentation for details on all its possible
 options, but these few examples should at least clarify the URI modification
 necessary to access this app's Provider.
 
-To keep things brief, these examples cover only the SMS Provider, but the URI
-modifications would be essentially the same with the other
-[Authorities](#authorities) too.
+To keep things brief, only the SMS Provider is demonstrated here, but the
+authority substitution works the same for [the others](#providers) too.
 
-### Read-only
+### Read-only operations
 
 To list the number and text for all (viewable) SMS messages:
 
@@ -139,7 +137,7 @@ Or, to list all columns for the message with ID 137:
 adb shell content query --uri content://adbsms/137
 ```
 
-### Full access
+### Full access operations
 
 If you've set adbsms as the default SMS app, you can also delete messages:
 
@@ -258,27 +256,26 @@ though it is relatively simple and amenable to the standard automation tools.
 
 ### Accessory feature settings
 
-The feature settings can all be accessed and modified through the shell. Each
-has a boolean activation flag; i.e., when `true`, the given functionality is
-active.
+Each feature setting has a corresponding boolean flag; when `true`, the given
+functionality is active.
 
 <div align="center">
   <table>
     <tr>
+      <td>Persistent status notification</td>
       <td><code>notifyStatus</code></td>
-      <td>Flag for the persistent status notification</td>
     </tr>
     <tr>
+      <td>Incoming message notifications</td>
       <td><code>notifyReceipts</code></td>
-      <td>Flag for incoming message notifications</td>
     </tr>
     <tr>
+      <td>Incoming message logs</td>
       <td><code>logReceipts</code></td>
-      <td>Flag for incoming message logs</td>
     </tr>
     <tr>
+      <td>Incoming SMS storage</td>
       <td><code>storeReceivedSms</code></td>
-      <td>Flag for incoming SMS message storage</td>
     </tr>
   </table>
 </div>
@@ -289,8 +286,9 @@ The `call` command is used for these non-CRUD operations.
 adb shell content call --uri <URI> --method <METHOD> [--arg <ARG>] [--extra <BINDING> ...]
 ```
 
-`<URI>` should be a base content URI. Since they all target the same Provider
-class, any of the app's [Authorities](#authorities) can be used.
+`<URI>` should be a base content URI. Any of the app's
+[Authorities](#authorities) can be used, since the call is meant for its
+Provider and won't go any further.
 
 The feature name is passed through `<METHOD>`, and the optional `<ARG>` has a
 dual use as both getter and setter, so to speak. `<BINDING>` isn't used for the
@@ -308,13 +306,13 @@ For example, to get the current `notifyStatus` value:
 adb shell content call --uri content://adbsms --method notifyStatus
 ```
 
-Which returns:
+Which returns something like:
 
 ```
 Result: Bundle[{notifyStatus=true}]
 ```
 
-To set `notifyStatus` instead, it's the same command with the `<ARG>` appended:
+To instead set `notifyStatus`, it's the same command with the `<ARG>` appended:
 
 ```
 adb shell content call --uri content://adbsms --method notifyStatus --arg false
@@ -330,13 +328,13 @@ Result: Bundle[{}]
 
 ### Status notification updates
 
-It's also possible to trigger updates to the status notification from the shell.
+It is possible to trigger updates to the status notification from the shell.
 Since these are normally enacted automatically by the UI, this allows for
 refreshing headlessly.
 
 If you plan to manage notifications without ever opening the UI, you'll need to
 grant the necessary permission on API levels 33 (Android 13, Tiramisu) and
-newer through Settings, or with:
+newer, through Settings or with:
 
 ```
 adb shell pm grant dev.gonodono.adbsms android.permission.POST_NOTIFICATIONS
@@ -441,14 +439,14 @@ messages from either or both of the first two.
 
 There is no public RCS API yet, and therefore no matching Provider either.
 However, Google's Messages app – and perhaps other messaging clients as well –
-apparently stores RCS in the MMS Provider, though that is its own chosen
+apparently stores RCS in the MMS Provider, though that is its own specialized
 behavior, as far as I know, not the system's.
 
 ### Authorities
 
 This table lists all the system Providers and authorities currently supported,
-along with unique authorities for both the main app and the [Minimal](#minimal)
-one.
+along with the unique authorities for both the main app and the
+[Minimal](#minimal) one.
 
 <div align="center">
 
@@ -512,7 +510,7 @@ In this version, the apps' Providers have had their authorities expanded to
 cover all the standard message Providers. For anyone building this themselves
 with a constant key, if you still have a prior version installed, Android
 technically should be able to upgrade without issue. If you have any problems,
-however, you may need to uninstall.
+however, you may need to uninstall first.
 
 ### Proper APK signing?
 
@@ -578,18 +576,6 @@ message types, you should know that not all SMS apps utilize each one. Though
 most use `inbox` and `sent` consistently, it seems that many apps don't use
 `draft` and/or the others at all. Apparently they save those messages to
 internal storage instead, for whatever reason. Just a heads-up.
-
-### No more golf
-
-Ever since I added the automated build and release, I've been working to shrink
-(golf) the APK by various means, mainly as a selling point, I guess. I won't be
-doing that anymore, since there's now a separate module dedicated to a minimal
-size implementation. I'll generally try to keep things small, but `adbsms.apk`'s
-size may fluctuate in the future, rather than decreasing monotonically.
-
-It should also be noted that `:min` is about as bare-bones as is feasible, so
-even small differences between build tool versions may be enough to effect
-`adbsms.min.apk`'s size, which is therefore liable to fluctuate as well.
 
 ### Bug reports
 
